@@ -6424,7 +6424,7 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
       east:hi%2?[]:[[-.5,.5,FL+.9,FL+2.0]].concat(D>7?[[1.6,2.6,FL+.9,FL+2.0]]:[]),west:hi%2?[[-.5,.5,FL+.9,FL+2.0]]:[]};
     /* a ruin: 'collapse' (a shell came through it - the side it came from is down to a course or two, the rest broken off at
        ragged heights, the corners standing longest as corners do), 'strike' (a drone through the side wall and the roof) */
-    const ruin=hd.ruin,RP={front:.82,back:.44,east:.1,west:.9},fallen=[];
+    const ruin=hd.ruin,RP={front:.5,back:.38,east:.08,west:.78},fallen=[],burntLogs=[];
     const stands=(nm,a,k)=>{if(ruin!=='collapse')return true;const half=(nm==='front'||nm==='back'?W:D)/2;const f=RP[nm]+sstep(half-1,half+.2,Math.abs(a))*.32+.15*Math.sin(a*1.9+hi*1.3)+.07*Math.sin(a*5.3+k*.7);return k<NL*f;};
     if(ruin==='strike')open[hd.breach[0]].push([hd.breach[1],hd.breach[2],FL+.2,FL+1.75]);
     /* the log walls, opening by opening; a clad house gets a skin of painted lap boards outside the logs */
@@ -6437,12 +6437,13 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
       WALLS.forEach(([nm,c,axis])=>{const half=(axis==='x'?W:D)/2;const ext=hd.clad?0:((k%2===0)===(axis==='x'))?.28:0;const yy=axis==='x'?y:y+LS/2;
         segsFor(nm,half,ext,y,LR*.5).forEach(sg=>{if(ruin!=='collapse'){addLog(axis,c,sg[0],sg[1],yy);return;}
           /* broken off: the standing runs of this course, each end snapped short; what is missing has fallen */
-          let a=sg[0],run=null;for(;a<=sg[1]+.001;a+=.25){const st=a<sg[1]&&stands(nm,a,k);if(st&&run===null)run=a;if(!st&&run!==null){const e=Math.min(a,sg[1]);addLog(axis,c,run+(run>sg[0]?Math.random()*.15:0),e-Math.random()*.2,yy);run=null;}
+          const nb=logs.length;let a=sg[0],run=null;for(;a<=sg[1]+.001;a+=.25){const st=a<sg[1]&&stands(nm,a,k);if(st&&run===null)run=a;if(!st&&run!==null){const e=Math.min(a,sg[1]);addLog(axis,c,run+(run>sg[0]?Math.random()*.15:0),e-Math.random()*.2,yy);run=null;}
             if(!st&&a<sg[1])fallen.push([nm,c,axis,a,Math.min(a+.25,sg[1]),yy]);}
-          if(run!==null)addLog(axis,c,run,sg[1],yy);});});}
+          if(run!==null)addLog(axis,c,run,sg[1],yy);
+          /* the courses just under the break are charred */const am=(sg[0]+sg[1])/2;if(!stands(nm,am,k+2)||!stands(nm,sg[0]+.3,k+2)||!stands(nm,sg[1]-.3,k+2))burntLogs.push(...logs.splice(nb));});});}
     if(hd.clad)for(let y=FL-.05;y<top+.05;y+=LS*.92)WALLS.forEach(([nm,c,axis,o])=>{const half=(axis==='x'?W:D)/2+LR+.03;segsFor(nm,half,0,y,LS*.42).forEach(s=>addBoard(axis,c+o*(LR+.035),s[0],s[1],y,o));});
     addLog('z',W/2,-D/2,D/2,FL+.11-LS/2);addLog('z',-W/2,-D/2,D/2,FL+.11-LS/2);if(ruin!=='collapse'){addLog('x',D/2,-W/2-(hd.clad?0:.28),W/2+(hd.clad?0:.28),top);addLog('x',-D/2,-W/2-(hd.clad?0:.28),W/2+(hd.clad?0:.28),top);}
-    shootables.push(mesh(merge(logs),logM,0,0,0,h));
+    shootables.push(mesh(merge(logs),logM,0,0,0,h));if(burntLogs.length)shootables.push(mesh(merge(burntLogs),charred,0,0,0,h));
     /* inside a lived-in house the logs are lined: wallpaper on battens over the logs in most, lime-washed plaster in some,
        cut round every window and the door, a painted skirting board along the floor */
     if(hd.enter){const lin=hi%4===2?wallLime(hi):wallPaper(hi);const IN=LR+.012,y0=FL+.03,y1=top-.08,parts=[],cas=[];
@@ -6495,7 +6496,7 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
     /* the roof: overhanging eaves; gable roofs carry painted board gables, hip roofs slope on all four sides */
     const ov=.55,ridge=top+(hd.hip?1.5:1.6),eave=top-.2,ex=W/2+(hd.hip?ov:.6),ez=D/2+ov;
     const roofM=hd.roof==='tin'?tinM(hd.rc||0x6a6e70):(hd.hip?slateDS:M.slate);
-    if(ruin==='collapse'){ruinRoof(h,hd,hi,W,D,top,ridge,fallen,logM);}
+    if(ruin==='collapse'){ruinRoof(h,hd,hi,W,D,top,ridge,fallen,logM,(nm,a)=>{let k=0;while(k<NL&&stands(nm,a,k))k++;return FL+.11+(k-1)*LS+LR*.8;});}
     else if(hd.roof==='slate'&&!hd.hip){const slope=Math.hypot(ez,ridge-eave),pitch=Math.atan2(ridge-eave,ez);
       const sheet=G('vsheet'+D,()=>{const g=new T.PlaneGeometry(1.12,slope,28,1);const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setZ(i,Math.sin(p.getX(i)/.167*Math.PI*2)*.018);g.computeVertexNormals();return g;});
       const nS=Math.ceil(2*ex/1.03);[-1,1].forEach(s=>{for(let i=0;i<nS;i++){if(hd.burnt&&s>0&&(i===2||i===3||i===4))continue;if(ruin==='strike'&&s===hd.hole[0]&&i>=hd.hole[1]&&i<=hd.hole[2])continue;const m=mesh(sheet,roofM,-ex+.55+i*1.03,(ridge+eave)/2,s*ez/2,h);m.rotation.set(s>0?-(Math.PI/2-pitch):Math.PI/2-pitch,0,0);shootables.push(m);}});
@@ -6530,8 +6531,8 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
       if(hd.enter)HOUSES.push(villRect(hd,vx-vw/2,vx+vw/2,D/2,D/2+vd));
       wb(vx-vw/2-.06,vx-vw/2+.06,D/2,D/2+vd);wb(vx+vw/2-.06,vx+vw/2+.06,D/2,D/2+vd);wb(vx-vw/2,vx+dxx-dw/2,D/2+vd-.06,D/2+vd+.06);wb(vx+dxx+dw/2,vx+vw/2,D/2+vd-.06,D/2+vd+.06);}
     else{const porch=new T.Group();porch.position.set(dx-.45,0,D/2+.75);h.add(porch);
-      mesh(rbox(1.8,FL+.2,1.3,.01),M.boards,0,(FL-.2)/2,0,porch);mesh(rbox(1.8,FL*.5+.1,.32,.01),M.boards,0,FL*.25-.05,.75,porch);[-.85,.85].forEach(x=>mesh(rbox(.1,2.6,.1,.01),M.post,x,1.15,.55,porch));
-      const pr=mesh(rbox(2.2,.05,1.6,.01),roofM,0,ruin==='collapse'?1.55:2.5,ruin==='collapse'?.35:.05+LR+(hd.clad?.06:0),porch);pr.rotation.x=ruin==='collapse'?.62:.18;if(ruin==='collapse')pr.rotation.z=.2;
+      mesh(rbox(1.8,FL+.2,1.3,.01),M.boards,0,(FL-.2)/2,0,porch);mesh(rbox(1.8,FL*.5+.1,.32,.01),M.boards,0,FL*.25-.05,.75,porch);[-.85,.85].forEach((x,i)=>{const pp=mesh(rbox(.1,2.6,.1,.01),M.post,x,1.15,.55,porch);if(ruin==="collapse"&&i===1){pp.rotation.z=1.5;pp.position.set(.15,FL+.055,.7);}});
+      if(ruin!=='collapse'){const pr=mesh(rbox(2.2,.05,1.6,.01),roofM,0,2.5,.05+LR+(hd.clad?.06:0),porch);pr.rotation.x=.18;}
       PORCHES.push(Object.assign(villRect(hd,dx-1.35,dx+.45,D/2,D/2+1.45),{y:FL}),Object.assign(villRect(hd,dx-1.35,dx+.45,D/2+1.45,D/2+1.75),{y:FL*.5}));}
     /* the covered yard behind, under its own lower roof: weathered vertical boards, a pair of cart doors in the side */
     if(hd.dvor){const L=7.2,z0=-D/2-L/2,hh=3.4;const dv=new T.Group();h.add(dv);
@@ -6565,7 +6566,7 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
     [[-.45,-1.0],[.45,-1.0],[-.45,1.0],[.45,1.0]].forEach(p=>mesh(new T.CylinderGeometry(.018,.018,p[1]<0?1.0:.75,6),iron,p[0],p[1]<0?.5:.375,p[1],bed));
     [-1.0,1.0].forEach(z=>{mesh(xf(new T.CylinderGeometry(.015,.015,.9,6),0,0,0,0,0,Math.PI/2),iron,0,z<0?.95:.7,z,bed);for(let i=0;i<5;i++)mesh(new T.CylinderGeometry(.008,.008,.35,10),iron,-.36+i*.18,z<0?.78:.55,z,bed);});
     /* mattress in its white sheet, the coverlet laid over it and hanging down the sides a little */mesh(rbox(.86,.14,1.9,.05),RF.LINEN,0,.49,0,bed);
-      {const qm=RF.quilt(hi);qm.side=T.DoubleSide;mesh(new T.BoxGeometry(.92,.025,1.7),qm,0,.57,.1,bed);[-1,1].forEach(sx=>{const m=mesh(new T.PlaneGeometry(1.7,.13),qm,sx*.46,.505,.1,bed);m.rotation.y=sx*Math.PI/2;});}pillowStack(bed,0,.57,-.72,0);{const v=mesh(new T.PlaneGeometry(1.92,.22),RF.LEDGE,sd*.455,.38,0,bed,false);v.rotation.y=Math.PI/2;}
+      {const qm=RF.quilt(hi);qm.side=T.DoubleSide;mesh(new T.BoxGeometry(.92,.025,1.7),qm,0,.57,.1,bed);[-1,1].forEach(sx=>{const dg=new T.PlaneGeometry(1.7,.13);{const P=dg.attributes.position,U=dg.attributes.uv;for(let i=0;i<P.count;i++)U.setXY(i,(P.getY(i)+.065)/.92,(P.getX(i)+.85)/1.7);}const m=mesh(dg,qm,sx*.46,.505,.1,bed);m.rotation.y=sx*Math.PI/2;});}pillowStack(bed,0,.57,-.72,0);{const v=mesh(new T.PlaneGeometry(1.92,.22),RF.LEDGE,sd*.455,.38,0,bed,false);v.rotation.y=Math.PI/2;}
     wb(sd>0?-W/2+.15:W/2-1.05,sd>0?-W/2+1.05:W/2-.15,-.65,1.45);
     const cp=mesh(new T.PlaneGeometry(1.5,2.1),std({map:carpetTex(hi),roughness:1,envMapIntensity:.1}),-sd*(W/2-.14),FL+1.45,.4,h,false);cp.rotation.y=sd*Math.PI/2;
     /* table with oilcloth in the red corner, the bench along the wall, chairs */
@@ -6653,12 +6654,12 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
   /* the roof of a shelled house, come down: sections of it leaning from what is left of the walls into the room, the ridge
      beam fallen corner to corner and out through the gap, rafters broken and sticking up, sheets of slate strewn outside
      the side the blast came from; the logs that came down from the walls lie where they fell or lean on the stubs */
-  function ruinRoof(h,hd,hi,W,D,top,ridge,fallen,logM){const q=rng(4100+hi),sl=[],wd=[],lg=[],ch=[];const ft=FL+.11+NL*.78*LS;
+  function ruinRoof(h,hd,hi,W,D,top,ridge,fallen,logM,topAt){const q=rng(4100+hi),sl=[],wd=[],lg=[],ch=[];/* (the tops of what is left of the front and west walls, where each piece rests) */const ft=topAt('front',-W*.12),wt=topAt('west',-D*.12);
     const slab=(A,B,w)=>sl.push(beamG(A,B,w,.035));
-    slab(V3(-W*.12,ft+.05,D/2+.25),V3(-W*.12,FL+.3,-D/2+1.4),W*.5);slab(V3(W*.18,ft-.35,D/2+.1),V3(W*.24,FL+.2,-.2),W*.32);
-    slab(V3(-W/2-.15,top-.05,-D*.12),V3(W/2-.9,FL+.25,-D*.2),D*.42);slab(V3(-W/2+.1,top-.3,D*.25),V3(W/2+.3,.25,D*.3),D*.28);
-    wd.push(beamG(V3(-W/2+.1,top+.12,.2),V3(W/2+1.6,gY(hd,W/2+1.6,-.4)+.12,-.4),.15,.15));
-    for(let i=0;i<7;i++){const x=-W/2+.4+q()*(W-.8),z0=(q()<.5?-1:1)*(D/2-.1),A=V3(x,i%2?ft:top-.1,z0),B=V3(x+(q()-.5)*1.2,FL+.3+q()*1.4,z0*(.2+q()*.4));if(q()<.4)B.y=A.y+.9+q()*.8;wd.push(beamG(A,B,.08,.12));}
+    slab(V3(-W*.12,ft+.05,D/2+.25),V3(-W*.12,FL+.3,-D/2+1.4),W*.5);slab(V3(W*.18,topAt('front',W*.18),D/2+.1),V3(W*.24,FL+.2,-.2),W*.32);
+    slab(V3(-W/2-.15,wt,-D*.12),V3(W/2-.9,FL+.25,-D*.2),D*.42);slab(V3(-W/2+.1,topAt('west',D*.25),D*.25),V3(W/2+.3,.25,D*.3),D*.28);
+    wd.push(beamG(V3(-W/2+.1,topAt('west',.2)+.12,.2),V3(W/2+1.6,gY(hd,W/2+1.6,-.4)+.12,-.4),.15,.15));
+    for(let i=0;i<7;i++){const x=-W/2+.4+q()*(W-.8),z0=(q()<.5?-1:1)*(D/2-.1),A=V3(x,topAt(z0>0?'front':'back',x),z0),B=V3(x+(q()-.5)*1.2,FL+.3+q()*1.4,z0*(.2+q()*.4));if(q()<.4)B.y=A.y+.9+q()*.8;wd.push(beamG(A,B,.08,.12));}
     for(let i=0;i<14;i++){const lx=W/2+.6+q()*4.5,lz=(q()-.5)*(D+3),y=gY(hd,lx,lz);const g=rbox(.5+q()*.6,.025,.4+q()*.7,.006);g.rotateX((q()-.5)*.25);g.rotateY(q()*3);g.rotateZ((q()-.5)*.25);g.translate(lx,y+.03,lz);sl.push(g);}
     /* the fallen logs: runs of the same course and wall make one log; about half lie about, a few lean */
     const runs=[];for(const f of fallen){const r=runs[runs.length-1];if(r&&r[0]===f[0]&&r[5]===f[5]&&Math.abs(r[4]-f[3])<.01)r[4]=f[4];else runs.push(f.slice());}
@@ -6677,9 +6678,15 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
       /* brick tumble at the foot of the chimney */const cx=hi%2?-W/2+1.2:W/2-1.2;for(let i=0;i<24;i++){const g=rbox(.24,.065,.12,.01);g.rotateY(q()*3);g.rotateX((q()-.5)*1.2);g.translate(cx+(q()-.5)*1.4,FL+.06+q()*.25,-.4+(q()-.5)*1.4+.9);brk.push(g);}}
     if(hd.ruin==='strike'){const [wl,b0,b1]=hd.breach,sx=wl==='west'?-1:1,cx=sx*W/2;
       /* the breach: splintered log ends round it, its edges charred, a fan of wreckage blown out into the yard */
-      const wm=mesh(new T.PlaneGeometry(3.4,2.6),scorchM(),cx+sx*(LR+.03),FL+1.0,(b0+b1)/2,h,false);wm.rotation.y=sx*Math.PI/2;wm.renderOrder=1;dec(cx+sx*2.5,(b0+b1)/2,6,q()*3);
+      const wsT=memo('wallScorch',()=>tex(256,192,(c,w,h)=>{c.clearRect(0,0,w,h);const q=rng(77),cx=w/2,cy=h*.55;
+        /* soot blown out round the hole and licking up the wall above it, the hole itself left clear */
+        for(let i=0;i<90;i++){const a=q()*6.28,r=40+q()*70,x=cx+Math.cos(a)*r*1.1,y=cy+Math.sin(a)*r*.8-q()*30,rr=10+q()*34,g=c.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,'rgba(14,11,8,.55)');g.addColorStop(1,'rgba(14,11,8,0)');c.fillStyle=g;c.fillRect(0,0,w,h);}
+        for(let i=0;i<26;i++){const x=cx+(q()-.5)*150,g=c.createLinearGradient(0,cy,0,0);g.addColorStop(0,'rgba(10,8,6,.6)');g.addColorStop(1,'rgba(10,8,6,0)');c.fillStyle=g;c.beginPath();c.moveTo(x-6-q()*8,cy);c.quadraticCurveTo(x+(q()-.5)*30,cy*.5,x+(q()-.5)*20,cy*(.05+q()*.3));c.lineTo(x+6+q()*8,cy);c.fill();}
+        c.globalCompositeOperation='destination-out';const g2=c.createRadialGradient(cx,cy,0,cx,cy,64);g2.addColorStop(0,'rgba(0,0,0,1)');g2.addColorStop(.7,'rgba(0,0,0,1)');g2.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g2;c.save();c.translate(cx,cy);c.scale(1.05,.95);c.translate(-cx,-cy);c.fillRect(0,0,w,h);c.restore();},{clamp:true}));
+      const wsM=memo('wallScorchM',()=>std({map:wsT,transparent:true,depthWrite:false,roughness:1,polygonOffset:true,polygonOffsetFactor:-2}));
+      const wm=mesh(new T.PlaneGeometry(4.4,3.3),wsM,cx+sx*(LR+.03),FL+1.05,(b0+b1)/2,h,false);wm.rotation.y=sx*Math.PI/2;wm.renderOrder=1;dec(cx+sx*2.5,(b0+b1)/2,6,q()*3);
       for(let k=0;k<8;k++){const y=FL+.25+k*LS*.95;for(const e of [b0,b1]){const L=.15+q()*.35,g=new T.CylinderGeometry(.02+q()*.03,.004,L,6);g.rotateZ(Math.PI/2*sx*(q()<.5?1:.6));g.translate(cx+sx*q()*.1,y,e+(e===b0?.05:-.05)+(q()-.5)*.1);deb.push(g);}}
-      for(let i=0;i<26;i++){const lx=cx+sx*(.6+q()*5),lz=(b0+b1)/2+(q()-.5)*5,y=gY(hd,lx,lz);if(q()<.3){const g=new T.CylinderGeometry(LR*.9,LR,.6+q()*1.4,12);g.rotateZ(Math.PI/2);g.rotateY(q()*3);g.translate(lx,y+LR*.8,lz);brk.push(g);}
+      for(let i=0;i<26;i++){const lx=cx+sx*(.6+q()*5),lz=(b0+b1)/2+(q()-.5)*5,y=gY(hd,lx,lz);if(q()<.3){const g=new T.CylinderGeometry(LR*.9,LR,.6+q()*1.4,16);g.rotateZ(Math.PI/2);g.rotateY(q()*3);g.translate(lx,y+LR*.8,lz);(q()<.5?brk:deb).push(g);for(let k=0;k<3;k++){const sp=new T.CylinderGeometry(.012+q()*.02,.003,.25+q()*.3,6);sp.rotateZ(Math.PI/2+(q()-.5)*.5);sp.rotateY(q()*3);sp.translate(lx+(q()-.5)*.6,y+LR*.4+q()*.1,lz+(q()-.5)*.6);deb.push(sp);}}
         else{const g=rbox(.06+q()*.1,.025,.3+q()*.9,.005);g.rotateY(q()*3);g.rotateZ((q()-.5)*.3);g.translate(lx,y+.02,lz);deb.push(g);}}
       /* the hole in the roof: charred rafters across it, the broken edges of the sheets */
       const [rs,i0,i1]=hd.hole,ex=W/2+.6,x0=-ex+.55+i0*1.03-.5,x1=-ex+.55+i1*1.03+.5,slope=Math.atan2(ridge-eave,ez);
