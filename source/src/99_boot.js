@@ -51,10 +51,11 @@ function mergeStatic(){const excl=new Set(),mark=o=>{if(o)o.traverse(c=>excl.add
     v.copy(g.boundingSphere.center).applyMatrix4(o.matrixWorld);
     const sig=Object.keys(g.attributes).sort().map(k=>{const at=g.attributes[k];return k+at.itemSize+(at.normalized?'n':'')+at.array.constructor.name+(at.isInterleavedBufferAttribute?'i':'');}).join('|');
     if(sig.includes('i|')||/i$/.test(sig))return;
-    const key=[matSig(m),o.castShadow,o.receiveShadow,o.renderOrder,sig,Math.floor(v.x/40),Math.floor(v.z/40)].join('#');let L=groups.get(key);if(!L)groups.set(key,L=[]);L.push(o);});
+    let ins='';for(let a=o;a&&a!==scene;a=a.parent)if(a.userData.inside){ins=a.userData.inside;break;}
+    const key=[matSig(m),o.castShadow,o.receiveShadow,o.renderOrder,sig,Math.floor(v.x/40),Math.floor(v.z/40),ins].join('#');let L=groups.get(key);if(!L)groups.set(key,L=[]);L.push(o);});
   let merged=0,removed=0;
   for(const L of groups.values()){if(L.length<2)continue;const out=mergeGeoms(L,o=>o.matrixWorld);
-    const o0=L[0],mm=new T.Mesh(out,o0.material);mm.castShadow=o0.castShadow;mm.receiveShadow=o0.receiveShadow;mm.renderOrder=o0.renderOrder;mm.userData.merged=L.length;scene.add(mm);merged++;
+    const o0=L[0],mm=new T.Mesh(out,o0.material);mm.castShadow=o0.castShadow;mm.receiveShadow=o0.receiveShadow;mm.renderOrder=o0.renderOrder;mm.userData.merged=L.length;{let ins='';for(let q=L[0];q&&q!==scene;q=q.parent)if(q.userData.inside){ins=q.userData.inside;break;}if(ins)mm.userData.inside=ins;}scene.add(mm);merged++;
     let sh=false;for(const o of L){const k=shootables.indexOf(o);if(k>=0){shootables.splice(k,1);sh=true;}o.parent.remove(o);removed++;}if(sh)shootables.push(mm);}
   return [merged,removed];}
 /* distance cull: with FogExp2 at 0.0125 anything further than ~230 m is >99.9% fog, so it is not drawn at all.
@@ -66,8 +67,8 @@ function buildDistanceCull(){const ex=new Set();[btr,playerBody.root].forEach(r=
     if(o.parent&&o.parent.isGroup&&GRASS.mesh===o.parent)return;for(let a=o;a;a=a.parent)if(a.userData.noCull)return;if(!g.boundingSphere)g.computeBoundingSphere();const b=g.boundingSphere;if(!b)return;
     v.copy(b.center).applyMatrix4(o.matrixWorld);o.matrixWorld.decompose(V3(),new T.Quaternion(),sc);const r=b.radius*Math.max(sc.x,sc.y,sc.z)+(o.isSkinnedMesh?1:0);
     let bone=false;for(let a=o.parent;a;a=a.parent)if(a.isBone)bone=true;
-    if(r>140)return;DCULL.list.push({o,c:v.clone(),r:r+(bone?1.5:0)});});}
-function distanceCull(){const p=camera.position,D=DCULL.d;for(const e of DCULL.list){const d=Math.hypot(e.c.x-p.x,e.c.z-p.z)-e.r;e.o.layers.mask=d<D?1:2;}}
+    if(r>140)return;let ins=false;for(let q=o;q;q=q.parent)if(q.userData.inside){ins=true;break;}DCULL.list.push({o,c:v.clone(),r:r+(bone?1.5:0),d:ins?32:0});});}
+function distanceCull(){const p=camera.position,D=DCULL.d;for(const e of DCULL.list){const d=Math.hypot(e.c.x-p.x,e.c.z-p.z)-e.r;e.o.layers.mask=d<(e.d||D)?1:2;}}
 /* region offload: whole static pieces of the map further off than the fog lets anything show are taken out of the scene
    graph altogether (not just hidden), so the per-frame matrix pass, the render-list walk and the shadow pass never touch
    them; they go back in well before they could come into view. Their matrices are frozen too - they never move. A piece

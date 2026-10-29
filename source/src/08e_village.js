@@ -12,6 +12,21 @@ function photoTex(seed){return tex(128,160,(c,w,h)=>{const q=rng(seed);const g=c
     c.fillStyle=`rgba(${50+q()*30|0},${38+q()*20|0},${28+q()*10|0},.9)`;c.beginPath();c.ellipse(x,y+40*s,22*s,34*s,0,Math.PI,0);c.fill();c.fillRect(x-22*s,y+40*s,44*s,h);
     c.fillStyle=`rgba(${120+q()*30|0},${95+q()*20|0},${70|0},.95)`;c.beginPath();c.ellipse(x,y,10*s,13*s,0,0,7);c.fill();c.fillStyle='rgba(40,30,22,.85)';c.beginPath();c.ellipse(x,y-6*s,11*s,7*s,0,Math.PI,0);c.fill();}
   for(let i=0;i<120;i++){c.fillStyle=`rgba(255,250,230,${q()*.12})`;c.fillRect(q()*w,q()*h,1+q()*2,1);}c.strokeStyle='#efe6d0';c.lineWidth=8;c.strokeRect(4,4,w-8,h-8);});}
+/* Soviet wallpaper: a pale ground, a printed vertical stripe of little flower sprigs, a fine pinstripe, faded and
+   foxed with age; and lime-wash over plaster, white with a blue tint, worn grey at hand height */
+function wallPaper(seed){seed=seed%4;return memo('wp'+seed,()=>{const P=[['#e4dcc4','#8a6a4a','#5a7a4a'],['#d8e0d0','#4a6a5a','#a06a5a'],['#e8d8c0','#7a4a3a','#4a5a7a'],['#e0d4d8','#6a4a5a','#5a6a4a']][seed%4];
+  const t=tex(256,256,(c,w,h)=>{const q=rng(300+seed);c.fillStyle=P[0];c.fillRect(0,0,w,h);
+    for(let x=0;x<w;x+=64){c.fillStyle=`rgba(0,0,0,.05)`;c.fillRect(x+28,0,8,h);c.fillStyle=P[1];c.globalAlpha=.35;c.fillRect(x+2,0,1.5,h);c.fillRect(x+60,0,1.5,h);c.globalAlpha=1;
+      for(let y=0;y<h;y+=42){const cx=x+32,cy=y+((x/64)%2)*21+10;c.strokeStyle=P[2];c.lineWidth=1.6;c.beginPath();c.moveTo(cx,cy+12);c.quadraticCurveTo(cx-3,cy+4,cx,cy-6);c.stroke();
+        [[-6,-2],[6,0],[-4,6],[5,7]].forEach(([dx,dy])=>{c.fillStyle=P[2];c.beginPath();c.ellipse(cx+dx,cy+dy,4,2,dx>0?.6:-.6,0,7);c.fill();});
+        c.fillStyle=P[1];[[0,-8],[-3,-10],[3,-10],[0,-12]].forEach(([dx,dy])=>{c.beginPath();c.arc(cx+dx,cy+dy,2.4,0,7);c.fill();});}}
+    for(let i=0;i<14;i++){const x=q()*w,y=q()*h,r=8+q()*30,g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'rgba(140,110,60,.12)');g.addColorStop(1,'rgba(140,110,60,0)');c.fillStyle=g;c.fillRect(x-r,y-r,2*r,2*r);}
+    const im=c.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){const v=.93+Math.random()*.1;d[i]*=v;d[i+1]*=v;d[i+2]*=v;}c.putImageData(im,0,0);});
+  t.wrapS=t.wrapT=T.RepeatWrapping;return std({map:t,roughness:.85,envMapIntensity:.2});});}
+function wallLime(seed){return memo('lime',()=>{const t=tex(256,256,(c,w,h)=>{const q=rng(500+seed);c.fillStyle='#dfe6ea';c.fillRect(0,0,w,h);
+    for(let i=0;i<260;i++){const x=q()*w,y=q()*h,r=2+q()*14;c.fillStyle=`rgba(${q()<.5?150:255},${q()<.5?160:255},${q()<.5?165:255},${.05+q()*.08})`;c.beginPath();c.arc(x,y,r,0,7);c.fill();}
+    for(let i=0;i<40;i++){c.strokeStyle=`rgba(90,90,95,${.05+q()*.08})`;c.lineWidth=.6;c.beginPath();let x=q()*w,y=q()*h;c.moveTo(x,y);for(let k=0;k<5;k++){x+=(q()-.5)*20;y+=q()*14;c.lineTo(x,y);}c.stroke();}});
+  t.wrapS=t.wrapT=T.RepeatWrapping;return std({map:t,roughness:.95,envMapIntensity:.25});});}
 /* the carpet on the wall over the bed: dark red field, border bands, a row of medallions */
 function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=['#6e1c1a','#5a1e2a','#2a3858'][seed%3];c.fillStyle=f;c.fillRect(0,0,w,h);
   for(const [m,col] of [[6,'#d8c39a'],[18,'#1d2a3a'],[26,'#b5442e']]){c.strokeStyle=col;c.lineWidth=7;c.strokeRect(m,m,w-2*m,h-2*m);}
@@ -90,6 +105,30 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
     if(hd.clad)for(let y=FL-.05;y<top+.05;y+=LS*.92)WALLS.forEach(([nm,c,axis,o])=>{const half=(axis==='x'?W:D)/2+LR+.03;segsFor(nm,half,0,y,LS*.42).forEach(s=>addBoard(axis,c+o*(LR+.035),s[0],s[1],y,o));});
     addLog('z',W/2,-D/2,D/2,FL+.11-LS/2);addLog('z',-W/2,-D/2,D/2,FL+.11-LS/2);addLog('x',D/2,-W/2-(hd.clad?0:.28),W/2+(hd.clad?0:.28),top);addLog('x',-D/2,-W/2-(hd.clad?0:.28),W/2+(hd.clad?0:.28),top);
     shootables.push(mesh(merge(logs),logM,0,0,0,h));
+    /* inside a lived-in house the logs are lined: wallpaper on battens over the logs in most, lime-washed plaster in some,
+       cut round every window and the door, a painted skirting board along the floor */
+    if(hd.enter){const lin=hi%4===2?wallLime(hi):wallPaper(hi);const IN=LR+.012,y0=FL+.03,y1=top-.08,parts=[],cas=[];
+      /* a painted casing round each opening, standing a little proud of the lining */
+      const casing=(lo,hi2,c0,c1,place,door)=>{const bw=.075,bx=(w,h_,cx,cy)=>{const g=new T.BoxGeometry(w,h_,.022);g.translate(cx,cy,.011);place(g);cas.push(g);};
+        bx(bw,c1-c0+(door?bw:2*bw),lo-bw/2,(c0+c1)/2+(door?bw/2:0));bx(bw,c1-c0+(door?bw:2*bw),hi2+bw/2,(c0+c1)/2+(door?bw/2:0));bx(hi2-lo,bw,(lo+hi2)/2,c1+bw/2);if(!door)bx(hi2-lo,bw,(lo+hi2)/2,c0-bw/2);};
+      const wallPiece=(a0,a1,holes,place)=>{const sh=new T.Shape();sh.moveTo(a0,y0);sh.lineTo(a1,y0);sh.lineTo(a1,y1);sh.lineTo(a0,y1);sh.closePath();
+        holes.forEach(([b0,b1,c0,c1])=>{const lo=Math.max(b0,a0+.02),hi2=Math.min(b1,a1-.02);if(hi2<=lo)return;const hp=new T.Path();const yy0=Math.max(c0,y0+.01);
+          if(yy0<=y0+.011){/* a doorway: notch from the floor */return;}hp.moveTo(lo,yy0);hp.lineTo(hi2,yy0);hp.lineTo(hi2,c1);hp.lineTo(lo,c1);hp.closePath();sh.holes.push(hp);casing(lo,hi2,yy0,c1,place,false);});
+        const g=new T.ShapeGeometry(sh);const p=g.attributes.position,uv=g.attributes.uv;for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)*1.8,p.getY(i)*1.8);place(g);parts.push(g);};
+      /* doorways reach the floor: split the wall there instead of cutting a hole */
+      const runs=(a0,a1,holes)=>{let segs=[[a0,a1]];holes.filter(o=>o[2]<=FL+.05).forEach(o=>{const ns=[];segs.forEach(sg=>{if(o[1]<=sg[0]||o[0]>=sg[1]){ns.push(sg);return;}if(o[0]>sg[0])ns.push([sg[0],o[0]]);if(o[1]<sg[1])ns.push([o[1],sg[1]]);});segs=ns;});
+        /* and the lintel over the doorway */const door=holes.filter(o=>o[2]<=FL+.05);return{segs,door};};
+      const doWall=(nm,len,mirror,place)=>{const L2=len/2-LR;const H_=open[nm].map(o=>mirror?[-o[1],-o[0],o[2],o[3]]:o);const {segs,door}=runs(-L2,L2,H_);
+        segs.forEach(([a0,a1])=>wallPiece(a0,a1,H_.filter(o=>o[2]>FL+.05&&o[0]<a1&&o[1]>a0),place));
+        door.forEach(o=>{casing(o[0],o[1],o[2],o[3],place,true);const sh=new T.Shape();sh.moveTo(o[0],o[3]);sh.lineTo(o[1],o[3]);sh.lineTo(o[1],y1);sh.lineTo(o[0],y1);sh.closePath();const g=new T.ShapeGeometry(sh);const p=g.attributes.position,uv=g.attributes.uv;for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)*1.8,p.getY(i)*1.8);place(g);parts.push(g);});};
+      doWall('back',W,false,g=>g.translate(0,0,-D/2+IN));
+      doWall('front',W,true,g=>{g.rotateY(Math.PI);g.translate(0,0,D/2-IN);});
+      doWall('east',D,false,g=>{g.rotateY(-Math.PI/2);g.translate(W/2-IN,0,0);});
+      doWall('west',D,true,g=>{g.rotateY(Math.PI/2);g.translate(-W/2+IN,0,0);});
+      parts.forEach(g=>{g.deleteAttribute('normal');g.computeVertexNormals();});mesh(merge(parts),lin,0,0,0,h,false).userData.inside=hd.id;if(cas.length)mesh(merge(cas),M.trimWhite,0,0,0,h,false).userData.inside=hd.id;
+      /* skirting */const sk=std({map:RF.PAINT.map,color:C(hi%2?0x8a5a3a:0x6a4a34),roughness:.6});
+      [[0,-D/2+IN+.012,W-2*LR,'x'],[W/2-IN-.012,0,D-2*LR,'z'],[-W/2+IN+.012,0,D-2*LR,'z']].forEach(([x,z,L,ax])=>{mesh(rbox(ax==='x'?L:.024,.1,ax==='x'?.024:L,.006),sk,x,FL+.08,z,h).userData.inside=hd.id;});
+      [[-W/2+LR,dX0],[dX1,W/2-LR]].forEach(([a,b])=>{if(b-a>.05)mesh(rbox(b-a,.1,.024,.006),sk,(a+b)/2,FL+.08,D/2-IN-.012,h).userData.inside=hd.id;});}
     if(boards.length){shootables.push(mesh(merge(boards),cladM,0,0,0,h));
       /* white corner boards and the skirting board */[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sz])=>mesh(rbox(.16,top-FL+.2,.16,.01),M.trimWhite,sx*(W/2+LR+.05),(top+FL)/2,sz*(D/2+LR+.05),h));
       [[0,D/2,W+.5,'x'],[0,-D/2,W+.5,'x'],[W/2,0,D+.5,'z'],[-W/2,0,D+.5,'z']].forEach(([x,z,L,ax])=>mesh(rbox(ax==='x'?L:.06,.18,ax==='x'?.06:L,.01),M.trimWhite,x+(ax==='z'?Math.sign(x)*(LR+.06):0),FL-.02,z+(ax==='x'?Math.sign(z)*(LR+.06):0),h));}
@@ -165,7 +204,8 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
       wb(-W/2-.1,W/2+.1,-D/2-L-.1,-D/2-L+.1);wb(-W/2-.1,-W/2+.1,-D/2-L,-D/2);wb(W/2-.1,W/2+.1,-D/2-L,-D/2);}
     PLOT(hd,hi,W,D,dx);
     if(hd.enter)HOUSES.push(villRect(hd,-W/2,W/2,-D/2,D/2));
-    if(hd.enter)furnish(h,hd,hi,W,D,wb,top);
+    /* (everything inside is tagged: it is merged per house and not drawn from more than ~32 m away) */
+    if(hd.enter){const n0=h.children.length;furnish(h,hd,hi,W,D,wb,top);for(let i=n0;i<h.children.length;i++)h.children[i].userData.inside=hd.id;}
     h.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});});
   /* ---- inside: the same layout as an izba always has, different in every house - the stove in a back corner with the
      kitchen by it, the red corner (icon, embroidered towel) over the table diagonally opposite, the bed under a carpet,
@@ -179,17 +219,21 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
     /* bed along the side wall with the carpet over it */
     const bed=new T.Group();bed.position.set(-sd*(W/2-.6),FL,.4);h.add(bed);const iron=std({color:C(0x2c3034),roughness:.5,metalness:.7});
     [[-.45,-1.0],[.45,-1.0],[-.45,1.0],[.45,1.0]].forEach(p=>mesh(new T.CylinderGeometry(.018,.018,p[1]<0?1.0:.75,6),iron,p[0],p[1]<0?.5:.375,p[1],bed));
-    [-1.0,1.0].forEach(z=>{mesh(xf(new T.CylinderGeometry(.015,.015,.9,6),0,0,0,0,0,Math.PI/2),iron,0,z<0?.95:.7,z,bed);for(let i=0;i<5;i++)mesh(new T.CylinderGeometry(.008,.008,.35,4),iron,-.36+i*.18,z<0?.78:.55,z,bed);});
-    mesh(rbox(.88,.14,1.92,.05),std({map:TX.cloth,color:C([0x8a7f6a,0x7a8478,0x8a7070,0x6f7a8a][hi%4]),roughness:1}),0,.5,0,bed);pillowStack(bed,0,.57,-.72,0);{const v=mesh(new T.PlaneGeometry(1.92,.22),RF.LEDGE,sd*.455,.38,0,bed,false);v.rotation.y=Math.PI/2;}
+    [-1.0,1.0].forEach(z=>{mesh(xf(new T.CylinderGeometry(.015,.015,.9,6),0,0,0,0,0,Math.PI/2),iron,0,z<0?.95:.7,z,bed);for(let i=0;i<5;i++)mesh(new T.CylinderGeometry(.008,.008,.35,10),iron,-.36+i*.18,z<0?.78:.55,z,bed);});
+    /* mattress in its white sheet, the coverlet laid over it and hanging down the sides a little */mesh(rbox(.86,.14,1.9,.05),RF.LINEN,0,.49,0,bed);
+      {const qm=RF.quilt(hi);qm.side=T.DoubleSide;mesh(new T.BoxGeometry(.92,.025,1.7),qm,0,.57,.1,bed);[-1,1].forEach(sx=>{const m=mesh(new T.PlaneGeometry(1.7,.13),qm,sx*.46,.505,.1,bed);m.rotation.y=sx*Math.PI/2;});}pillowStack(bed,0,.57,-.72,0);{const v=mesh(new T.PlaneGeometry(1.92,.22),RF.LEDGE,sd*.455,.38,0,bed,false);v.rotation.y=Math.PI/2;}
     wb(sd>0?-W/2+.15:W/2-1.05,sd>0?-W/2+1.05:W/2-.15,-.65,1.45);
     const cp=mesh(new T.PlaneGeometry(1.5,2.1),std({map:carpetTex(hi),roughness:1,envMapIntensity:.1}),-sd*(W/2-.14),FL+1.45,.4,h,false);cp.rotation.y=sd*Math.PI/2;
     /* table with oilcloth in the red corner, the bench along the wall, chairs */
     const tx=-sd*(W/2-.75),tz=D/2-.75;const table=new T.Group();table.position.set(tx,FL,tz);h.add(table);
-    mesh(rbox(1.12,.05,.76,.01),M.boards,0,.74,0,table);mesh(rbox(1.16,.006,.8,.002),std({map:KLEENKA,roughness:.35,envMapIntensity:.6}),0,.768,0,table);
-    [[-.5,-.32],[.5,-.32],[-.5,.32],[.5,.32]].forEach(p=>mesh(rbox(.05,.72,.05,.01),M.boards,p[0],.36,p[1],table));wb(tx-.58,tx+.58,tz-.4,tz+.4);
+    mesh(rbox(1.12,.05,.76,.01),RF.PAINT,0,.74,0,table);mesh(rbox(1.16,.006,.8,.002),std({map:KLEENKA,roughness:.35,envMapIntensity:.6}),0,.768,0,table);
+    [[-.5,-.32],[.5,-.32],[-.5,.32],[.5,.32]].forEach(p=>mesh(rbox(.05,.72,.05,.01),RF.PAINT,p[0],.36,p[1],table));[[0,.66,-.32,1.0,'x'],[0,.66,.32,1.0,'x'],[-.5,.66,0,.6,'z'],[.5,.66,0,.6,'z']].forEach(([x,y,z,L,ax])=>mesh(rbox(ax==='x'?L:.025,.09,ax==='x'?.025:L,.006),RF.PAINT,x,y,z,table));RF.fin(table);wb(tx-.58,tx+.58,tz-.4,tz+.4);
     mesh(new T.CylinderGeometry(.06,.05,.1,12),M.enamel,.25,.82,-.1,table);mesh(lathe([[0,0],[.05,0],[.06,.05],[.04,.1],[.02,.12],[.035,.16],[.04,.22],[.02,.26],[0,.26]],12),M.glass,-.3,.77,.15,table);
     const chair=(x,z,ry,fall)=>{const c=new T.Group();c.position.set(x,FL,z);c.rotation.y=ry;h.add(c);if(fall){c.rotation.set(0,ry,Math.PI/2);c.position.y=FL+.22;}
-      mesh(rbox(.42,.04,.42,.01),M.boards,0,.45,0,c);mesh(rbox(.42,.45,.04,.01),M.boards,0,.7,-.2,c);[[-.18,-.18],[.18,-.18],[-.18,.18],[.18,.18]].forEach(p=>mesh(rbox(.035,.45,.035,.005),M.boards,p[0],.225,p[1],c));};
+      /* a plain kitchen chair: the back legs run on up as the uprights, two back rails between them, stretchers low down */
+      mesh(rbox(.42,.04,.42,.01),RF.PAINT,0,.45,0,c);[[-.18,.18],[.18,.18]].forEach(p=>mesh(rbox(.035,.45,.035,.005),RF.PAINT,p[0],.225,p[1],c));
+      [-.18,.18].forEach(x=>{const u=mesh(rbox(.035,.92,.035,.005),RF.PAINT,x,.46,-.185,c);u.rotation.x=-.04;});[.66,.84].forEach(y=>mesh(rbox(.36,.07,.022,.005),RF.PAINT,0,y,-.193-(y-.46)*.04,c));
+      [[0,.12,.18,'x'],[0,.12,-.18,'x'],[-.18,.17,0,'z'],[.18,.17,0,'z']].forEach(([x,y,z,ax])=>mesh(rbox(ax==='x'?.36:.022,.025,ax==='x'?.022:.36,.004),RF.PAINT,x,y,z,c));RF.fin(c);};
     if(hi%3===1){chair(tx+sd*.75,tz-.1,sd*Math.PI/2,false);chair(sd*.3,.6,1.2+hi,hi%2===0);}
     else{viennaChair(h,tx+sd*.78,FL,tz-.1,sd*Math.PI/2,false);viennaChair(h,sd*.3,FL,.6,1.2+hi,hi%2===0);}
     /* against the back wall of the living room: the sideboard, or the chest of drawers under its mirror, or the dowry
@@ -246,15 +290,12 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
       top.push([x,zc,hgt,wid]);}
     for(let i=0;i<n;i++)for(let j=0;j<RS;j++){const a=i*(RS+1)+j,b=a+RS+1;idx.push(a,b,a+1,b,b+1,a+1);}
     const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();bk.add(g,soilM);return top;}
-  function PLOT(hd,hi,W,D,dx){const g=hd.garden;let x0=Math.min(-W/2-4.2,g[0]-1),x1=Math.max(W/2+4.2,g[1]+1),z0=g[2]-1.2,z1=D/2+(hd.ver?2.3:0)+3.6;
-    for(const o of hd.out){const r=o[0]==='green'?3.2:o[0]==='banya'?2.4:2.1;x0=Math.min(x0,o[1]-r);x1=Math.max(x1,o[1]+r);z0=Math.min(z0,o[2]-r);
-      /* the cellar's earth bank lies behind its cellar-house: keep it inside the fence too */
-      if(o[0]==='cellar'){const bx=o[1]-3.55*Math.sin(o[3]),bz=o[2]-3.55*Math.cos(o[3]),sw=Math.abs(Math.sin(o[3]))>.5,ex=(sw?2.4:1.9)+.6,ez=(sw?1.9:2.4)+.6;x0=Math.min(x0,bx-ex);x1=Math.max(x1,bx+ex);z0=Math.min(z0,bz-ez);}}
+  function PLOT(hd,hi,W,D,dx){const g=hd.garden;const [x0,x1,z0,z1]=hd.plotL;
     /* the footprints of whatever stands in the garden (a greenhouse): the ridges stop short of it */
     const FPS={saray:[3.8,3.2],banya:[4.3,4.5],wood:[4.1,1.9],wc:[1.5,1.75],green:[3.1,5.9],cellar:[2.5,2.8]};
     const busy=hd.out.map(([k,lx,lz,ry])=>{const sw=Math.abs(Math.sin(ry))>.5,[w,d]=FPS[k];const W_=(sw?d:w)/2+.25,D_=(sw?w:d)/2+.25;return[lx-W_,lx+W_,lz-D_,lz+D_];});
     const isBusy=(x,z)=>busy.some(b=>x>b[0]&&x<b[1]&&z>b[2]&&z<b[3]);
-    hd.prect=villRect(hd,x0,x1,z0,z1);const gx=dx-.45;fenceRun(hd,x0,z1,x1,z1,hd.fence,[gx-.75,gx+.75]);fenceRun(hd,x0,z0,x0,z1,'rail');fenceRun(hd,x1,z0,x1,z1,'rail');fenceRun(hd,x0,z0,x1,z0,'rail');
+    const gx=dx-.45;fenceRun(hd,x0,z1,x1,z1,hd.fence,[gx-.75,gx+.75]);fenceRun(hd,x0,z0,x0,z1,'rail');fenceRun(hd,x1,z0,x1,z1,'rail');fenceRun(hd,x0,z0,x1,z0,'rail');
     /* the garden: its own low rail fence, dug ridges, potatoes in most of them, a row or two of cabbages */
     fenceRun(hd,g[0],g[2],g[1],g[2],'rail',null,.9);fenceRun(hd,g[0],g[2],g[0],g[3],'rail',null,.9);fenceRun(hd,g[1],g[2],g[1],g[3],'rail',null,.9);fenceRun(hd,g[0],g[3],g[1],g[3],'rail',[(g[0]+g[1])/2-.6,(g[0]+g[1])/2+.6],.9);
     /* the ridges, hoed up by hand: each one follows the ground, wanders a little off the line, swells and slumps along
@@ -357,26 +398,64 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
       mesh(bg,turfM,0,0,-d/2-2.45,g);const vp=std({color:C(0x7a7c78),roughness:.5,metalness:.6});mesh(new T.CylinderGeometry(.06,.06,1.1,10),vp,.3,.75,-d/2-2.85,g);mesh(new T.ConeGeometry(.14,.12,10),vp,.3,1.34,-d/2-2.85,g);
       OUTS(hd,lx,lz,ry,w+.4,d+.4);const [bx,bz]=villW(hd,lx-(d/2+2.45)*Math.sin(ry),lz-(d/2+2.45)*Math.cos(ry));solids.push({cx:bx,cz:bz,r:1.8});}};
   /* the yards' own growth, planted at boot (see villageYards): an apple tree or birch, lilac and currant by the fences */
-  let VT=null;VILL.houses.forEach((hd,hi)=>YARDS.push(()=>{if(!VT)VT={birch:speciesTypes(birchGeo,woodMat.birch,MB,TX.twigBirch),bush:speciesTypes(bushGeo,woodMat.dead,MG,TX.twigBush),dead:speciesTypes(deadGeo,woodMat.dead,null,null)};
-    const q=rng(900+hi),col=new T.Color();const put=(lx,lz,kind,s)=>{const [wx,wz]=villW(hd,lx,lz);const L=VT[kind];col.setRGB(1,1,1).offsetHSL((q()-.5)*.06,(q()-.5)*.15,(q()-.5)*.1);
-      vegPut(L[(q()*L.length)|0],wx,H(wx,wz)-.12,wz,q()*6.28,s,s*(.9+q()*.2),col,null);solids.push({cx:wx,cz:wz,r:kind==='bush'?.35*s:.25*s});};
-    const W=hd.W,D=hd.D,g=hd.garden;put(-W/2-1.6,D/2+2.8,'bush',.7+q()*.3);put(W/2+1.8,D/2+2.2,'bush',.6+q()*.3);put(g[0]-.2,(g[2]+g[3])/2,'bush',.7+q()*.2);
-    put(g[1]+.4,g[2]+2,hd.burnt?'dead':'birch',.85+q()*.3);if(hi%2)put(-W/2-1.4,-D/2-1.8,'birch',.7+q()*.3);}));
-  /* between the plots and along the verges: birches, a willow or two, lilac and elder, never inside a fence or on the street */
-  YARDS.push(()=>{const q=rng(1313),col=new T.Color();const free=(x,z,m)=>{if(villStreetD(x,z)<4.5||Math.hypot(x-HX,z-HZ)<13||villPathD(x,z)<2||Math.hypot(x-VILL.well.x,z-VILL.well.z)<4)return false;for(const hd of VILL.houses){const r=hd.prect;if(r&&x>r.x1-m&&x<r.x2+m&&z>r.z1-m&&z<r.z2+m)return false;}return true;};
-    const put=(x,z,kind,s)=>{if(!free(x,z,kind==='bush'?.8:1.6))return;const L=VT[kind];col.setRGB(1,1,1).offsetHSL((q()-.5)*.06,(q()-.5)*.15,(q()-.5)*.1);vegPut(L[(q()*L.length)|0],x,H(x,z)-.12,z,q()*6.28,s,s*(.9+q()*.2),col,null);solids.push({cx:x,cz:z,r:kind==='bush'?.35*s:.25*s});};
-    for(let x=4;x<165;x+=4+q()*5){for(const sdz of [-1,1]){const z=villSZ(x)+sdz*(4.8+q()*9);const r=q();if(r<.32)put(x,z,'bush',.6+q()*.5);else if(r<.45)put(x,z,'birch',.8+q()*.4);}}
-    for(let k=0;k<70;k++){const x=5+q()*160,z=-410+q()*110;const r=q();put(x,z,r<.6?'bush':'birch',r<.6?.6+q()*.5:.8+q()*.4);}});
+  /* ===== what grows in and round the yards (planted at boot, see villageYards) ===== */
+  let VT=null;const vt=()=>VT||(VT={birch:speciesTypes(birchGeo,woodMat.birch,MB,TX.twigBirch),bush:speciesTypes(bushGeo,woodMat.dead,MG,TX.twigBush),dead:speciesTypes(deadGeo,woodMat.dead,null,null),apple:speciesTypes(appleGeo,woodMat.bark,MG,TX.twigBush)});
+  const SCALE={bush:[.6,1.05],apple:[.85,1.15],ybirch:[.5,.7],birch:[.8,1.15],dead:[.6,.8]},SOLR={bush:.35,apple:.2,ybirch:.16,birch:.22,dead:.2};
+  const plantAt=(q,col,x,z,kind,s)=>{const L=vt()[kind==='ybirch'?'birch':kind];col.setRGB(1,1,1).offsetHSL((q()-.5)*.06,(q()-.5)*.15,(q()-.5)*.1);
+    vegPut(L[(q()*L.length)|0],x,H(x,z)-.12,z,q()*6.28,s,s*(.9+q()*.2),col,null);solids.push({cx:x,cz:z,r:SOLR[kind]*s});};
+  /* inside a plot: never on the house, the garden beds, an outbuilding or the cellar's bank, the gate path, or the fence */
+  const FPY={saray:[3.8,3.2],banya:[4.3,4.5],wood:[4.1,1.9],wc:[1.5,1.75],green:[3.1,5.9],cellar:[2.5,2.8]};
+  const yardBusy=(hd,hi)=>{if(hd._yb)return hd._yb;const W=hd.W,D=hd.D,g=hd.garden,L=[[-W/2-1.0,W/2+1.0,-D/2-1.0-(hd.dvor?7.4:0),D/2+(hd.ver?2.7:1.9)],[g[0]-.35,g[1]+.35,g[2]-.35,g[3]+.35]];
+    hd.out.forEach(([k,lx,lz,ry])=>{const sw=Math.abs(Math.sin(ry))>.5,[w,d]=FPY[k];const a=(sw?d:w)/2+.6,b=(sw?w:d)/2+.6;L.push([lx-a,lx+a,lz-b,lz+b]);
+      if(k==='cellar'){const bx=lx-3.55*Math.sin(ry),bz=lz-3.55*Math.cos(ry),ex=(sw?2.4:1.9)+.3,ez=(sw?1.9:2.4)+.3;L.push([bx-ex,bx+ex,bz-ez,bz+ez]);}});
+    const gx=(hi%2?.6:.2)-.45;L.push([gx-1.2,gx+1.2,D/2,hd.plotL[3]+1]);return hd._yb=L;};
+  const yardFree=(hd,hi,lx,lz,r,taken)=>{const [x0,x1,z0,z1]=hd.plotL;if(lx<x0+.7+r||lx>x1-.7-r||lz<z0+.7+r||lz>z1-.7-r)return false;
+    if(yardBusy(hd,hi).some(b=>lx>b[0]-r&&lx<b[1]+r&&lz>b[2]-r&&lz<b[3]+r))return false;return !taken.some(t=>Math.hypot(t[0]-lx,t[1]-lz)<t[2]+r);};
+  VILL.houses.forEach((hd,hi)=>YARDS.push(()=>{const q=rng(900+hi),col=new T.Color(),taken=[];const [x0,x1,z0,z1]=hd.plotL;
+    /* an old apple tree or two (three in the big yards), a young birch, lilac and currant against the fences; an empty
+       house's yard has gone wild - more bushes, a self-sown birch, a dead tree */
+    const want=hd.boarded?[['dead',1],['ybirch',1],['bush',5]]:[['apple',hd.W>8?3:2],['ybirch',1],['bush',3]];
+    for(const [kind,n] of want){let got=0;for(let t=0;t<60&&got<n;t++){let lx,lz;
+      if(kind==='bush'){const e=(q()*4)|0;lx=e<2?(e?x1-1.1:x0+1.1):x0+1.5+q()*(x1-x0-3);lz=e>=2?(e===2?z0+1.1:z0+1.5+q()*(z1-z0-3)):z0+1.5+q()*(z1-z0-3);if(e===3)lz=z1-1.1;}
+      else{lx=x0+1.5+q()*(x1-x0-3);lz=z0+1.5+q()*(z1-z0-3);}
+      const r=kind==='bush'?.75:kind==='ybirch'?1.1:1.8;if(!yardFree(hd,hi,lx,lz,kind==='bush'?.35:.9,taken))continue;
+      const [wx,wz]=villW(hd,lx,lz),sc=SCALE[kind];plantAt(q,col,wx,wz,kind,sc[0]+q()*(sc[1]-sc[0]));taken.push([lx,lz,r]);got++;}}}));
+  /* the alleys: a hedge of lilac, elder and acacia either side, gapped here and there, an apple or a young birch every
+     few metres; the streets' verges; and the odd tree in the grass between the plots */
+  YARDS.push(()=>{const q=rng(1313),col=new T.Color(),placed=[];
+    const inPlot=(x,z,m)=>VILL.houses.some(hd=>{const r=hd.prect;return x>r.x1-m&&x<r.x2+m&&z>r.z1-m&&z<r.z2+m;});
+    const clear=(x,z,r)=>!placed.some(p=>Math.hypot(p[0]-x,p[1]-z)<p[2]+r);
+    const free=(x,z,m,pathMin)=>!(villStreetD(x,z)<4.5||Math.hypot(x-HX,z-HZ)<13||villPathD(x,z)<pathMin||Math.hypot(x-VILL.well.x,z-VILL.well.z)<4||inPlot(x,z,m));
+    const put=(x,z,kind,m,pathMin)=>{const sc=SCALE[kind],s=sc[0]+q()*(sc[1]-sc[0]),r=kind==='bush'?.6*s:kind==='apple'?1.6:1.0;if(!free(x,z,m,pathMin)||!clear(x,z,r))return false;plantAt(q,col,x,z,kind,s);placed.push([x,z,r]);return true;};
+    for(const [pi,za,zb] of VILL.alleys){const L=VILL.paths[pi],w=(VILL.alleyW[pi]||0)+.9;
+      for(let i=0;i<L.length-1;i++){const [ax,az]=L[i],[bx,bz]=L[i+1],len=Math.hypot(bx-ax,bz-az),ux=(bx-ax)/len,uz=(bz-az)/len;
+        for(let t=0;t<len;t+=1.5+q()*.7){const x=ax+ux*t,z=az+uz*t;if(z>Math.max(za,zb)+.5||z<Math.min(za,zb)-.5)continue;
+          for(const sd of [-1,1]){if(q()<.13)continue;const off=w+.55+q()*.35,px=x-uz*off*sd,pz=z+ux*off*sd;
+            if(q()<.12){put(px-uz*.5*sd,pz+ux*.5*sd,q()<.55?'apple':'ybirch',.5,w+.6);}else put(px,pz,'bush',.15,w+.25);}}}}
+    for(const L of VILL.streets){for(let i=0;i<L.length-1;i++){const [ax,az]=L[i],[bx,bz]=L[i+1],len=Math.hypot(bx-ax,bz-az),ux=(bx-ax)/len,uz=(bz-az)/len;
+      for(let t=0;t<len;t+=3.5+q()*4)for(const sd of [-1,1]){const off=4.9+q()*6,px=ax+ux*t-uz*off*sd,pz=az+uz*t+ux*off*sd,r=q();put(px,pz,r<.5?'bush':r<.75?'apple':'ybirch',.8,2);}}}
+    for(let x=4;x<165;x+=4+q()*5){for(const sdz of [-1,1]){const z=villSZ(x)+sdz*(4.8+q()*9);const r=q();if(r<.32)put(x,z,'bush',.8,2);else if(r<.42)put(x,z,'birch',1.6,2);else if(r<.52)put(x,z,q()<.5?'apple':'ybirch',1.2,2);}}
+    for(let k=0;k<160;k++){const x=5+q()*200,z=-445+q()*190;const r=q();put(x,z,r<.5?'bush':r<.72?'apple':r<.9?'ybirch':'birch',1.2,2);}});
   buildHouses();
   /* ===== the power line along the street: wooden poles on the north verge with a crossarm and three glass insulators,
      the wires sagging pole to pole, and from the nearest pole a service wire down to an insulator on each house ===== */
   {const q=rng(4242),wood=std({map:TX.bark,color:C(0x6f6354),roughness:.95}),ins=std({color:C(0x9fb8b0),roughness:.15,metalness:.1,envMapIntensity:.9});const poles=[],wires=[];
    const sag=(a,b,dep)=>{for(let t=0;t<12;t++){const u0=t/12,u1=(t+1)/12,f=u=>-4*dep*u*(1-u);const pa=a.clone().lerp(b,u0),pb=a.clone().lerp(b,u1);pa.y+=f(u0);pb.y+=f(u1);wires.push(pa.x,pa.y,pa.z,pb.x,pb.y,pb.z);}};
-   for(let x=6;x<=162;x+=30+q()*8){const z=villSZ(x)-5.4;if(Math.hypot(x-HX,z-HZ)<9)continue;const y=H(x,z),lean=(q()-.5)*.05;
-     const pg=new T.CylinderGeometry(.1,.14,8.8,9);pg.translate(0,4.4-.7,0);bk.add(pg,wood,TRS(x,y,z,lean,q()*6,0));const ag=rbox(.1,.1,1.9,.01);ag.translate(0,7.55,0);bk.add(ag,wood,TRS(x,y,z,lean,0,0));
-     const att=[-.8,0,.8].map(dz=>{const ig=new T.CylinderGeometry(.035,.05,.12,8);ig.translate(0,7.67,dz);bk.add(ig,ins,TRS(x,y,z,lean,0,0));return V3(x,y+7.74,z+dz);});
-     solids.push({cx:x,cz:z,r:.18});poles.push(att);}
-   for(let i=1;i<poles.length;i++)for(let k=0;k<3;k++)sag(poles[i-1][k],poles[i][k],.45);
+   /* a pole stands on the verge, never in a yard, an alley, a path's line or the road; the crossarm across the line */
+   const okP=(x,z)=>!(VILL.houses.some(hd=>{const r=hd.prect;return x>r.x1-.7&&x<r.x2+.7&&z>r.z1-.7&&z<r.z2+.7;})||villPathD(x,z)<1.5||villStreetD(x,z)<3.7||Math.hypot(x-HX,z-HZ)<9||Math.hypot(x-VILL.well.x,z-VILL.well.z)<3);
+   const pole=(x,z,ang)=>{const y=H(x,z),lean=(q()-.5)*.05;const pg=new T.CylinderGeometry(.1,.14,8.8,9);pg.translate(0,4.4-.7,0);bk.add(pg,wood,TRS(x,y,z,lean,q()*6,0));
+     const ag=rbox(.1,.1,1.9,.01);ag.translate(0,7.55,0);bk.add(ag,wood,TRS(x,y,z,lean,ang,0));const c=Math.cos(ang),sn=Math.sin(ang);
+     const att=[-.8,0,.8].map(dz=>{const ig=new T.CylinderGeometry(.035,.05,.12,8);ig.translate(0,7.67,dz);bk.add(ig,ins,TRS(x,y,z,lean,ang,0));return V3(x+dz*sn,y+7.74,z+dz*c);});
+     solids.push({cx:x,cz:z,r:.18});return att;};
+   /* walk a street's centre line, a pole every 30-38 m on one verge (the other if that is taken), the wires pole to pole */
+   const lines=[];const runLine=(L,side,first)=>{const ps=[];let next=first;let acc=0;
+     for(let i=0;i<L.length-1;i++){const [ax,az]=L[i],[bx,bz]=L[i+1],len=Math.hypot(bx-ax,bz-az),ux=(bx-ax)/len,uz=(bz-az)/len;
+       for(let t=0;t<len;t+=.5){acc+=.5;if(acc<next)continue;const cx=ax+ux*t,cz=az+uz*t;let done=false;
+         for(const sd of [side,-side]){const x=cx-uz*5.3*sd,z=cz+ux*5.3*sd;if(okP(x,z)){ps.push(pole(x,z,Math.atan2(ux,uz)+Math.PI/2));done=true;break;}}
+         if(done){next=acc+30+q()*8;}else next=acc+1.5;}}
+     for(let i=1;i<ps.length;i++)for(let k=0;k<3;k++)sag(ps[i-1][k],ps[i][k],.45);lines.push(...ps);return ps;};
+   {const M_=[];for(let x=4;x<=162;x+=2)M_.push([x,villSZ(x)]);runLine(M_,-1,2);}
+   runLine(VILL.streets[0],-1,8);runLine(VILL.streets[1],1,8);poles.push(...lines);
    for(const hd of VILL.houses){if(hd.burnt)continue;const [hx,hz]=villW(hd,-hd.W/2+.5,hd.D/2+.14+(hd.clad?.06:0));const yT=FL+.11+12*.215-.25;let best=null,bd=1e9;for(const p of poles){const d=Math.hypot(p[1].x-hx,p[1].z-hz);if(d<bd){bd=d;best=p;}}
      if(!best||bd>60)continue;const tgt=V3(hx,yT,hz);const ig=new T.CylinderGeometry(.03,.04,.1,8);ig.rotateX(Math.PI/2);bk.add(ig,ins,TRS(hx,yT,hz,0,hd.yaw,0));sag(best[0],tgt,.6);}
    const wl=new T.LineSegments(new T.BufferGeometry().setAttribute('position',new T.Float32BufferAttribute(wires,3)),new T.LineBasicMaterial({color:C(0x161614)}));scene.add(wl);}
@@ -407,9 +486,9 @@ function carpetTex(seed){return tex(256,384,(c,w,h)=>{const q=rng(seed);const f=
   bk.flush(scene,true);
 })();
 /* at boot, before the vegetation is built: clear the wild growth out of every plot, then plant the yards */
-function villageYards(){for(const hd of VILL.houses){const g=hd.gbox,b=hd.box;const x1=Math.min(g.x1,b.x1)-6,x2=Math.max(g.x2,b.x2)+6,z1=Math.min(g.z1,b.z1)-6,z2=Math.max(g.z2,b.z2)+6;
+function villageYards(){for(const hd of VILL.houses){const r=hd.prect;const x1=r.x1-1.5,x2=r.x2+1.5,z1=r.z1-1.5,z2=r.z2+1.5;
     for(const t of VEG.types){const P=t.P,M_=t.M,Cc=t.C;const keep=[];for(let i=0;i<P.length/2;i++){const x=P[i*2],z=P[i*2+1];if(!(x>x1&&x<x2&&z>z1&&z<z2))keep.push(i);}if(keep.length===P.length/2)continue;
       const nP=[],nM=[],nC=[];keep.forEach(i=>{nP.push(P[i*2],P[i*2+1]);for(let k=0;k<16;k++)nM.push(M_[i*16+k]);nC.push(Cc[i*3],Cc[i*3+1],Cc[i*3+2]);});t.P.length=0;t.P.push(...nP);t.M.length=0;t.M.push(...nM);t.C.length=0;t.C.push(...nC);}}
-  for(const t of VEG.types){const P=t.P;const keep=[];for(let i=0;i<P.length/2;i++){const x=P[i*2],z=P[i*2+1];if(x>0&&x<170&&z>-425&&z<-295&&(villPathD(x,z)<1.6||Math.hypot(x-VILL.well.x,z-VILL.well.z)<4))continue;keep.push(i);}
+  for(const t of VEG.types){const P=t.P;const keep=[];for(let i=0;i<P.length/2;i++){const x=P[i*2],z=P[i*2+1];if(x>0&&x<205&&z>-448&&z<-240&&(villPathD(x,z)<2.2||villStreetD(x,z)<5||Math.hypot(x-VILL.well.x,z-VILL.well.z)<4))continue;keep.push(i);}
     if(keep.length===P.length/2)continue;const nP=[],nM=[],nC=[];keep.forEach(i=>{nP.push(P[i*2],P[i*2+1]);for(let k=0;k<16;k++)nM.push(t.M[i*16+k]);nC.push(t.C[i*3],t.C[i*3+1],t.C[i*3+2]);});t.P.length=0;t.P.push(...nP);t.M.length=0;t.M.push(...nM);t.C.length=0;t.C.push(...nC);}
   YARDS.forEach(f=>f());YARDS.length=0;}

@@ -118,6 +118,25 @@ function bushGeo(){const W=new Wood(),w=new Wood(),ctr=V3(0,.9,0),Lv=new Leaves(
       const U=V3().crossVectors(sd,V3(rnd(-1,1),rnd(-.2,.2),rnd(-1,1))).normalize();const sz=rnd(.38,.58);Lv.add(o,U,sd,sz,sz*1.15);}
     for(let k=0;k<2;k++){const o=at(P,.45+k*.4),sd=spread(dirAt(P,.6),.9,rnd(6.28));const U=V3().crossVectors(sd,V3(0,1,0)).normalize();lv.add(o,U,sd,1,1.2);}}
   return{trunk:W.geo(),leaves:Lv.geo(),lo:{trunk:w.geo(),leaves:lv.geo()}};}
+/* ---- an old apple tree (the yards' fruit tree): a short crooked trunk, dark scaly bark, splitting low into a few
+   heavy limbs that spread out and down under their own weight; side branches off every limb, the twigs dense with leaf,
+   the crown wider than it is tall. Every limb starts inside the wood it grows from. ---- */
+function appleGeo(){const W=new Wood(),w=new Wood(),th=rnd(.9,1.35),H0=rnd(3.3,4.6),lean=V3(rnd(-.12,.12),1,rnd(-.12,.12)).normalize();
+  const ctr=V3(lean.x*th,th+(H0-th)*.5,lean.z*th),Lv=new Leaves(ctr),lv=new Leaves(ctr);
+  const bcol=(t,p,r)=>{const k=.55+.25*sstep(.02,.08,r);return[k*.95,k*.88,k*.8];};
+  const trunk=grow(V3(),lean,th,5,0,.18);const r0=rnd(.1,.13);const TR=taper(6,r0,r0*.72,1);W.tube(trunk,TR,10,3,bcol);w.tube([trunk[0],trunk[5]],[r0,r0*.72],5,3,bcol);
+  const top=trunk[5],nl=(rnd(3,6)|0);
+  for(let i=0;i<nl;i++){const d=spread(lean,rnd(.55,1.05),i*6.28/nl+rnd(-.3,.3)),L=rnd(1.7,2.6)*(H0/4);
+    const P=grow(top.clone().addScaledVector(d,-.04),d,L,6,-.22,.35,false),lr=r0*.62;W.tube(P,taper(7,lr,.012,.9),7,3,bcol);w.tube([P[0],P[3],P[6]],[lr,lr*.5,.012],4,3,bcol);
+    /* side branches: shorter, more level, crooked */
+    for(let s=.25;s<.95;s+=rnd(.16,.24)){const q=at(P,s),dq=dirAt(P,s);const sd=spread(dq,rnd(.6,1.1),rnd(6.28));sd.y=Math.abs(sd.y)*.6+.1;sd.normalize();
+      const l2=rnd(.7,1.3)*(1.1-s*.5),C=grow(q,sd,l2,4,-.25,.6,false),br=Math.min(lr*(1-s)*.7,.035)+.006;W.tube(C,taper(5,br,.004,.9),4,3,bcol);
+      /* leafy twigs all along: clusters of leaf cards facing out and a little up */
+      for(let k=1;k<=5;k++){const o=at(C,k/5*.96),out=V3().subVectors(o,ctr).setY(0).normalize();const dv=V3(out.x*.6+rnd(-.4,.4),rnd(.1,.7),out.z*.6+rnd(-.4,.4)).normalize();
+        const U=V3().crossVectors(dv,V3(rnd(-1,1),rnd(-.3,.3),rnd(-1,1))).normalize();const sz=rnd(.42,.62);Lv.add(o,U,dv,sz,sz*1.05);if(k%2)Lv.add(o,V3().crossVectors(dv,U).normalize(),dv,sz*.9,sz);}
+      lv.add(at(C,.6),V3().crossVectors(sd,V3(0,1,0)).normalize(),V3(sd.x,.5,sd.z).normalize(),1.3,1.3);}
+    for(let k=0;k<3;k++){const o=at(P,.5+k*.22),dv=V3(rnd(-.5,.5),rnd(.3,.8),rnd(-.5,.5)).normalize();const U=V3().crossVectors(dv,V3(1,0,0)).normalize();Lv.add(o,U,dv,.55,.6);lv.add(o,U,dv,1.2,1.2);}}
+  return{trunk:W.geo(),leaves:Lv.geo(),lo:{trunk:w.geo(),leaves:lv.geo()}};}
 /* ---- foliage material: alpha-tested, lit on both faces from the bent normals, swaying with the wind; the alpha is
    boosted with distance so mipmapping cannot thin the canopy into see-through lace (the usual reason distant trees
    look sparse and their shadows let the sun straight through) ---- */
@@ -167,7 +186,7 @@ function vegPut(t,x,y,z,ry,s,sy,col,tilt){_vo.position.set(x,y,z);_vo.rotation.s
   t.M.push(..._vo.matrix.elements);t.P.push(x,z);t.C.push(col?col.r:1,col?col.g:1,col?col.b:1);}
 /* a fixed set of models per species, shared by every planting (fields, forest, verges): fewer distinct meshes means
    far fewer draw calls for the same forest */
-const SPECIES=new Map(),NVAR=new Map([[birchGeo,3],[pineGeo,3],[scotsGeo,2],[deadGeo,2],[bushGeo,2]]);
+const SPECIES=new Map(),NVAR=new Map([[birchGeo,3],[pineGeo,3],[scotsGeo,2],[deadGeo,2],[bushGeo,2],[appleGeo,3]]);
 function speciesTypes(geoFn,trunkMat,leafM,leafTex){let L=SPECIES.get(geoFn);if(!L){L=Array.from({length:NVAR.get(geoFn)||2},()=>vegType(geoFn(),trunkMat,leafM,leafTex));SPECIES.set(geoFn,L);}return L;}
 function plant(geoFn,variants,list,trunkMat,leafM,leafTex,tint,col,tilt){if(!list.length)return;const L=speciesTypes(geoFn,trunkMat,leafM,leafTex);
   list.forEach(p=>{const s=rnd(.8,1.2),t=L[R()*L.length|0];_vc.copy(tint||_white).offsetHSL(rnd(-.04,.04),rnd(-.1,.1),rnd(-.08,.06));

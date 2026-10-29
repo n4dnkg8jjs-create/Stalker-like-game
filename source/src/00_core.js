@@ -2,11 +2,22 @@
 const S={};
 const $=id=>document.getElementById(id);
 const T=THREE;
-/* round things get enough sides to look round: once HIPOLY is on (from the west country's build on), a cylinder thicker
-   than a pencil gets at least 10 sides, a post 12, a log or a drum 16 - asked-for counts above that stand */
-let HIPOLY=false;{const C0=T.CylinderGeometry;T.CylinderGeometry=class extends C0{constructor(rt=1,rb=1,h=1,rs=8,hs=1,oe=false,ts=0,tl=Math.PI*2){
-  if(HIPOLY){const r=Math.max(rt,rb);if(r>=.025)rs=Math.max(rs,r>=.19?24:r>=.11?18:r>=.06?14:10);}super(rt,rb,h,rs,hs,oe,ts,tl);}};
- const D0=T.CircleGeometry;T.CircleGeometry=class extends D0{constructor(r=1,sg=8,ts=0,tl=Math.PI*2){if(HIPOLY&&r>=.025)sg=Math.max(sg,r>=.19?24:r>=.11?18:r>=.06?14:10);super(r,sg,ts,tl);}};}
+/* round things get enough sides to look round: once HIPOLY is on (from the BTR's build on), every turned, rolled or
+   bent part - cylinders, discs, spheres, rings, lathed profiles - gets a side count to match its size, from a chair
+   rung up to a drum; asked-for counts above the minimum stand. Thin wire (under 6 mm) is left as asked. */
+let HIPOLY=false;{const sides=r=>r>=.19?32:r>=.11?24:r>=.06?20:r>=.025?16:r>=.006?10:0;
+ const C0=T.CylinderGeometry;T.CylinderGeometry=class extends C0{constructor(rt=1,rb=1,h=1,rs=8,hs=1,oe=false,ts=0,tl=Math.PI*2){
+  /* (three or four sides asked for is a deliberate prism or pyramid - a square post, a tent roof - and stays) */
+  if(HIPOLY&&rs>4){rs=Math.max(rs,Math.ceil(sides(Math.max(rt,rb))*Math.max(.35,tl/(Math.PI*2))));}super(rt,rb,h,rs,hs,oe,ts,tl);}};
+ const D0=T.CircleGeometry;T.CircleGeometry=class extends D0{constructor(r=1,sg=8,ts=0,tl=Math.PI*2){if(HIPOLY)sg=Math.max(sg,Math.ceil(sides(r)*Math.max(.35,tl/(Math.PI*2))));super(r,sg,ts,tl);}};
+ const S0=T.SphereGeometry;T.SphereGeometry=class extends S0{constructor(r=1,ws=8,hs=6,ps=0,pl=Math.PI*2,ts=0,tl=Math.PI){
+  if(HIPOLY&&r>=.006){const n=sides(r);ws=Math.max(ws,Math.ceil(n*pl/(Math.PI*2)));hs=Math.max(hs,Math.ceil(n*.6*tl/Math.PI));}super(r,ws,hs,ps,pl,ts,tl);}};
+ const R0=T.TorusGeometry;T.TorusGeometry=class extends R0{constructor(R=1,tb=.4,rs=8,ts=6,arc=Math.PI*2){
+  if(HIPOLY){if(tb>=.003)rs=Math.max(rs,tb>=.02?14:tb>=.008?10:8);ts=Math.max(ts,Math.ceil(Math.max(12,sides(R)*1.5)*arc/(Math.PI*2)));}super(R,tb,rs,ts,arc);}};
+ const L0=T.LatheGeometry;T.LatheGeometry=class extends L0{constructor(pts,sg=12,ps=0,pl=Math.PI*2){
+  if(HIPOLY){let r=0;for(const p of pts)r=Math.max(r,p.x);sg=Math.max(sg,Math.ceil(Math.max(12,sides(r))*pl/(Math.PI*2)));}super(pts,sg,ps,pl);}};}
+/* one copy of a texture or material that many pieces share (made the first time it is asked for) */
+const MEMO=new Map();function memo(k,f){let v=MEMO.get(k);if(v===undefined){v=f();MEMO.set(k,v);}return v;}
 let _s=20261019;
 const R=()=>{_s=(_s*16807)%2147483647;return (_s-1)/2147483646;};
 const rnd=(a=1,b)=>b===undefined?R()*a:a+R()*(b-a);

@@ -25,41 +25,69 @@ const VILL={sz:-363.5,x0:0,x1:160,
    {id:'s1',x:21,z:-351,yaw:Math.PI,W:6.6,D:5.8,clad:0,roof:'slate',col:0x4f7899,enter:1,fence:'picket',
     garden:[-6,7,-19,-6],out:[['cellar',6.4,-3.6,-Math.PI/2],['saray',-6,-2,Math.PI/2],['green',-2,-22.6,0]]},
    {id:'s2',x:45,z:-346.5,yaw:Math.PI,W:8.4,D:6.6,clad:1,hip:1,roof:'tin',col:0xb08a3a,rc:0x8a3028,enter:1,ver:1,fence:'board',
-    garden:[-6,4,-20,-6.5],out:[['cellar',6.9,-4.0,-Math.PI/2],['wood',-6.4,.4,Math.PI/2],['wc',3,-21.5,Math.PI]]},
+    garden:[-6,4,-20,-6.5],out:[['cellar',7.0,-6.0,0],['wood',-6.4,.4,Math.PI/2],['wc',3,-21.5,Math.PI]]},
    {id:'s3',x:63,z:-352.5,yaw:Math.PI,W:5.8,D:5,clad:0,roof:'slate',col:0x6a7a5a,boarded:1,burnt:1,fence:'rail',
     garden:[-2,5,-13,-4.5],out:[['saray',5.6,-1.6,-Math.PI/2]]},
    {id:'s4',x:106,z:-350,yaw:Math.PI,W:7,D:6,clad:1,roof:'tin',col:0x5d7f52,rc:0x676c70,enter:1,fence:'picket',
     garden:[-7,7,-15,-6],out:[['cellar',6.2,-3.8,-Math.PI/2],['banya',-10.2,-9,Math.PI/2],['wood',-5.8,-2.5,Math.PI/2],['green',3,-18.4,0]]},
    {id:'s5',x:133,z:-345,yaw:Math.PI,W:10,D:7.4,clad:0,hip:1,roof:'tin',col:0x8a3a32,rc:0x8a3028,enter:1,ver:2,fence:'board',
     garden:[-9,9,-24,-8],out:[['cellar',-8.4,-4.2,Math.PI/2],['saray',8.2,-3.6,-Math.PI/2],['saray',8.2,1.2,-Math.PI/2],['wc',-10.6,-25,Math.PI/2],['green',5,-27.4,0]]},
-   {id:'l1',x:70,z:-326,yaw:Math.PI/2,W:6.4,D:5.6,clad:0,roof:'slate',col:0x6a7a5a,boarded:1,fence:'rail',
+   {id:'l1',x:71.2,z:-326,yaw:Math.PI/2,W:6.4,D:5.6,clad:0,roof:'slate',col:0x6a7a5a,boarded:1,fence:'rail',
     garden:[-5,5,-15,-5],out:[['cellar',-6.6,-1.5,Math.PI/2]]},
    {id:'l2',x:100,z:-318,yaw:-Math.PI/2,W:7.6,D:6.2,clad:1,roof:'tin',col:0x3f5f8f,rc:0x8a3028,enter:1,fence:'picket',
-    garden:[-6,7,-15,-6],out:[['cellar',6.6,-4,-Math.PI/2],['saray',-6.4,-3.2,Math.PI/2],['green',-2.5,-18.3,0]]}]};
+    garden:[-6,3.5,-13,-6],out:[['cellar',6.0,-6.3,0],['saray',-6.4,-3.2,Math.PI/2],['green',-2.5,-16.3,0]]},
+   /* Polevaya street, off the lane south-east toward the fields: b1, b4 on its south side, b2, b5 on its north */
+   {id:'b1',x:112,z:-275.6,yaw:Math.PI,W:7.4,D:6.2,clad:1,roof:'tin',col:0x7a8a5a,rc:0x5a3a30,enter:1,ver:1,fence:'picket',
+    garden:[-6,6,-19,-6.5],out:[['cellar',6.4,-3.6,-Math.PI/2],['saray',-6.2,-2.6,Math.PI/2],['wc',3,-21,Math.PI]]},
+   {id:'b2',x:134,z:-299.1,yaw:0,W:6.8,D:5.8,clad:0,roof:'slate',col:0x7a5a3a,enter:1,fence:'picket',
+    garden:[-6,6,-12,-5],out:[['wood',-6,-1.5,Math.PI/2],['cellar',6.2,-2.8,-Math.PI/2]]},
+   {id:'b4',x:147,z:-265.5,yaw:Math.PI,W:7,D:6,clad:1,roof:'tin',col:0x9a8a5a,rc:0x4a5a6a,enter:1,fence:'board',
+    garden:[-6,6,-17,-6],out:[['cellar',-6,-3.5,Math.PI/2],['saray',6,-2,-Math.PI/2],['green',-2,-21,0]]},
+   {id:'b5',x:168,z:-288.3,yaw:0,W:6.4,D:5.8,clad:0,roof:'slate',col:0x6a6a5a,boarded:1,fence:'rail',
+    garden:[-5,5,-14,-5],out:[['saray',5.9,-2.4,-Math.PI/2]]},
+   /* Lesnaya street, leaving the main street's east end north-east toward the forest: c1 on its east side, c2 on its west */
+   {id:'c1',x:181.8,z:-384,yaw:-Math.PI/2,W:7.2,D:6,clad:0,roof:'tin',col:0x4a6a8a,rc:0x6a3a2c,enter:1,ver:1,fence:'picket',
+    garden:[-6,6,-20,-6.5],out:[['cellar',6.2,-3.6,-Math.PI/2],['saray',-6.2,-2.4,Math.PI/2],['wc',-4,-22,Math.PI]]},
+   {id:'c2',x:163.2,z:-424,yaw:Math.PI/2,W:6.2,D:5.6,clad:0,roof:'slate',col:0x5a6a4a,boarded:1,fence:'rail',
+    garden:[-5,5,-14,-5],out:[['wood',5.4,-1.8,-Math.PI/2]]}]};
+/* the two newer streets (the kolkhoz built them in the sixties): each bends away from the street it leaves at a slant */
+VILL.streets=[[[89.5,-302],[95,-298.5],[103,-296],[112,-293.5],[122,-290],[140,-283.5],[160,-277],[180,-271],[198,-266]],
+  [[150,-363],[156,-370],[163,-380],[168,-392],[171,-405],[175,-418],[183,-431],[194,-442]]];
 /* a point in a house's own frame -> the world (the same turn the house group gets) */
 function villW(h,lx,lz){const c=Math.cos(h.yaw),s=Math.sin(h.yaw);return[h.x+lx*c+lz*s,h.z-lx*s+lz*c];}
 /* a box in a house's frame -> its world-aligned rectangle (the houses only ever turn by quarter turns) */
 function villRect(h,a0,a1,b0,b1){const P=[villW(h,a0,b0),villW(h,a1,b0),villW(h,a0,b1),villW(h,a1,b1)];return{x1:Math.min(...P.map(p=>p[0])),x2:Math.max(...P.map(p=>p[0])),z1:Math.min(...P.map(p=>p[1])),z2:Math.max(...P.map(p=>p[1]))};}
-VILL.houses.forEach(h=>{const r=villRect(h,-h.W/2,h.W/2,-h.D/2-(h.dvor?7.2:0),h.D/2);h.box=r;h.gbox=villRect(h,...h.garden);});
+VILL.houses.forEach(h=>{const r=villRect(h,-h.W/2,h.W/2,-h.D/2-(h.dvor?7.2:0),h.D/2);h.box=r;h.gbox=villRect(h,...h.garden);
+  /* the plot: the fence goes round the house, its yard, the outbuildings (with the cellar's earth bank) and the garden */
+  const W=h.W,D=h.D,g=h.garden;let x0=Math.min(-W/2-4.2,g[0]-1),x1=Math.max(W/2+4.2,g[1]+1),z0=g[2]-1.2,z1=D/2+(h.ver?2.3:0)+3.6;
+  for(const o of h.out){const rr=o[0]==='green'?3.2:o[0]==='banya'?2.4:2.1;x0=Math.min(x0,o[1]-rr);x1=Math.max(x1,o[1]+rr);z0=Math.min(z0,o[2]-rr);
+    if(o[0]==='cellar'){const bx=o[1]-3.55*Math.sin(o[3]),bz=o[2]-3.55*Math.cos(o[3]),sw=Math.abs(Math.sin(o[3]))>.5,ex=(sw?2.4:1.9)+.6,ez=(sw?1.9:2.4)+.6;x0=Math.min(x0,bx-ex);x1=Math.max(x1,bx+ex);z0=Math.min(z0,bz-ez);}}
+  h.plotL=[x0,x1,z0,z1];h.prect=villRect(h,x0,x1,z0,z1);});
 /* footpaths: trodden earth between the plots - to the fields behind the north gardens, round the south side to the lane's
    end, between the two plots on the east, out to the well, and a short cut across the meadow toward the forest */
-VILL.paths=[[[52,-366],[51.6,-379],[51.4,-392],[52.6,-404],[57,-412.5],[66,-418],[84,-421],[104,-419.5],[124,-417.5],[146,-415],[164,-409]],
-  [[54.4,-362],[54.4,-350],[54.9,-342],[57,-337.2],[64,-335.8],[72,-335.6],[78,-336.4],[84.6,-338.2]],
-  [[32.5,-362],[32.8,-348],[32.4,-334],[33.4,-322],[35.8,-312],[39.5,-301]],
-  [[121.5,-366],[121.8,-378],[122.6,-392],[123.6,-405],[124,-416.5]],
+VILL.paths=[[[52,-366],[51.6,-379],[51.4,-392],[52.6,-404],[57,-412.5],[66,-418],[84,-421],[104,-419.5],[124,-417.5],[146,-414.5],[158,-412.6],[170.2,-406.8]],
+  [[54.4,-362],[54.4,-350],[54.4,-341],[54.5,-337.2],[57,-335.9],[64,-335.8],[72,-335.6],[78,-336.4],[84.6,-338.2]],
+  [[32.3,-362],[32.4,-348],[32.3,-334],[32.6,-322],[35.8,-312],[39.5,-301]],
+  [[123.4,-366],[123.6,-378],[123.9,-392],[123.8,-405],[124,-416.5]],
+  [[102.7,-366],[102.6,-380],[102.9,-394],[102.7,-408],[103,-419.6]],
+  [[120.6,-361],[120.7,-345],[120.8,-330],[121.1,-312],[121.6,-290.5]],
   [[75.2,-362.6],[74.5,-359.4],[74.1,-355.4]],
-  [[151,-361],[151.8,-346],[154.5,-331],[159,-316],[165,-303]],
+  [[151,-361],[151.8,-346],[152.5,-331],[154,-316],[156,-300],[157.5,-279]],
   [[13,-366.6],[11.6,-374],[12.4,-384],[17,-397],[30,-405],[42,-409],[52.6,-404]]];
 VILL.well={x:74.0,z:-353.4};
-function villPathD(x,z){let d=99;for(const L of VILL.paths){for(let i=0;i<L.length-1;i++){const [ax,az]=L[i],[bx,bz]=L[i+1];if(Math.abs(x-ax)>40&&Math.abs(x-bx)>40)continue;const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz)));d=Math.min(d,Math.hypot(x-ax-dx*t,z-az-dz*t)+Math.sin(x*1.7+z*1.3)*.08);}}return d;}
+/* which of the paths are alleys (proper lanes between the fences, hedged with lilac and elder) and over what stretch */
+VILL.alleys=[[2,-361,-324],[3,-366,-414],[4,-366,-417],[5,-360,-292]];
+VILL.alleyW={2:.45,3:.4,4:.5,5:.35};
+function villPathD(x,z){let d=99;VILL.paths.forEach((L,pi)=>{const w=VILL.alleyW&&VILL.alleyW[pi]||0;for(let i=0;i<L.length-1;i++){const [ax,az]=L[i],[bx,bz]=L[i+1];if(Math.abs(x-ax)>40&&Math.abs(x-bx)>40)continue;const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz)));d=Math.min(d,Math.hypot(x-ax-dx*t,z-az-dz*t)+Math.sin(x*1.7+z*1.3)*.08-w);}});return d;}
 function villLaneD(x,z){let d=99;for(const L of [VILL.lane,VILL.lane2])for(let i=0;i<L.length-1;i++){const [ax,az]=L[i],[bx,bz]=L[i+1];const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz)));d=Math.min(d,Math.hypot(x-ax-dx*t,z-az-dz*t));}return d;}
 /* the street's centre line: a gentle wander, and at its west end it swings north-west to run into the north road at a
    slant (carts and lorries turned north there, toward the house); the ruts of the few that turned south cut the other corner */
+function polyD(L,x,z){let d=99;for(let i=0;i<L.length-1;i++){const [ax,az]=L[i],[bx,bz]=L[i+1];const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz)));d=Math.min(d,Math.hypot(x-ax-dx*t,z-az-dz*t));}return d;}
 function villSZ(x){const k=x<26?(26-x)/26:0;return VILL.sz+Math.sin(x*.045)*1.2-k*k*12;}
 function villSZd(x){const k=x<26?(26-x)/26:0;return Math.cos(x*.045)*.054+k*24/26;}
 VILL.cut=[[1.6,-354.5],[5.2,-359.4],[10.5,-362.8],[17,-364.9]];
 function villCutD(x,z){const L=VILL.cut;let d=99;for(let i=0;i<L.length-1;i++){const [ax,az]=L[i],[bx,bz]=L[i+1];const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz)));d=Math.min(d,Math.hypot(x-ax-dx*t,z-az-dz*t));}return d;}
-function villStreetD(x,z){let d=99;if(x>VILL.x0-2&&x<VILL.x1+6)d=Math.abs(z-villSZ(x))/Math.hypot(1,villSZd(x));if(x>-2&&x<20&&z>-368&&z<-350)d=Math.min(d,villCutD(x,z)*1.35);if(x>70&&x<100&&z>-366&&z<-275)d=Math.min(d,villLaneD(x,z)*1.15);return d;}
+function villStreetD(x,z){let d=99;if(x>VILL.x0-2&&x<VILL.x1+6)d=Math.abs(z-villSZ(x))/Math.hypot(1,villSZd(x));if(x>-2&&x<20&&z>-368&&z<-350)d=Math.min(d,villCutD(x,z)*1.35);if(x>85&&x<200&&z>-446&&z<-260)for(const L of VILL.streets)d=Math.min(d,polyD(L,x,z));if(x>70&&x<100&&z>-366&&z<-275)d=Math.min(d,villLaneD(x,z)*1.15);return d;}
 function villGarden(x,z){for(const h of VILL.houses){const g=h.gbox;if(x>g.x1&&x<g.x2&&z>g.z1&&z<g.z2)return Math.min(x-g.x1,g.x2-x,z-g.z1,g.z2-z);}return -1;}
 function flatW(x,z){let m=sstep(4.5,16,Math.abs(x));
   const dF=Math.max(Math.abs(x)-46,Math.abs(z)-38);m*=sstep(0,18,dF);
@@ -259,16 +287,24 @@ const REDPINE={x:-357,z:-411,r:17};
 function floorK(x,z){if(x>-312||x<-482||Math.abs(z+392)>72)return 0;const f=forestF(x,z);if(f<=0)return 0;
   return f*sstep(-312,-332,x)*sstep(72,56,Math.abs(z+392))*sstep(-482,-466,x)*(.5+.5*sstep(.32,.62,fbm(x/16+3,z/16,2)));}
 const hotspots=[{x:-34,z:-318,r:7,uSv:45,frag:1},{x:66,z:-436,r:8,uSv:110,frag:1},{x:14,z:-352,r:5,uSv:28,frag:1},{x:HX,z:HZ,r:12,uSv:9}];
-function grassDens(x,z){
+/* the village's fine ground cover, sharper than the grass map can hold: it goes into a mask of its own at a third of a
+   metre (VM) - bare under and round the houses, worn thin near them, none in the beds, trodden paths and alleys, the street
+   ruts with their grassy crown; and the tall grass is cut short in the yards and kept off every way people walk */
+const VB={x0:-2,x1:208,z0:-450,z1:-238};
+function villGrassK(x,z){let d=1;for(const h of VILL.houses){const b=h.box;if(x>b.x1-1.2&&x<b.x2+1.2&&z>b.z1-1.2&&z<b.z2+1.2)return 0;const dh2=Math.hypot(x-h.x,z-h.z);if(dh2<9)d*=.35+.65*sstep(4,9,dh2);}
+  {const gd=villGarden(x,z);if(gd>=0)d*=gd<.6?.5:0;}
+  if(x>0&&x<205&&z>-445&&z<-265){const pd=villPathD(x,z);if(pd<1.1)d*=pd<.42?0:pd<.75?.35:.7;if(Math.hypot(x-VILL.well.x,z-VILL.well.z)<2.4)d*=.2;}
+  {const sd=villStreetD(x,z);if(sd<3.6){const rut=Math.abs(Math.abs(sd)-.85);d*=sd<2.4?(rut<.35?0:.45):.7;}}return d;}
+function villTallK(x,z){if(villGarden(x,z)>=0)return 0;for(const h of VILL.houses){const b=h.box;if(x>b.x1-1.8&&x<b.x2+1.8&&z>b.z1-1.8&&z<b.z2+1.8)return 0;}
+  let k=1;const pd=villPathD(x,z);k*=sstep(.9,1.8,pd);const sd=villStreetD(x,z);k*=sstep(3.4,4.6,sd);if(Math.hypot(x-VILL.well.x,z-VILL.well.z)<3.2)k=0;
+  for(const h of VILL.houses){const r=h.prect;if(x>r.x1&&x<r.x2&&z>r.z1&&z<r.z2){k*=h.boarded?.6:.12;break;}}return k;}
+function grassDens(x,z,noVill){
   let d=.5+.5*sstep(.32,.62,fbm(x/34+7,z/34+1,3));
   const ax=Math.abs(x);
   if(ax<4.2){d*=sstep(.32,.62,Math.abs(ax-1.85));if(ax>3.2)d*=.6;}
   if(Math.abs(x)<44&&Math.abs(z)<35){const e=Math.min(44-Math.abs(x),35-Math.abs(z));d*=e<1.2?.5:0;}
   if(x>HX-4.6&&x<HX+4.6&&z>HZ-3.6&&z<HZ+5.2)d=0;
-  for(const h of VILL.houses){const b=h.box;if(x>b.x1-1.2&&x<b.x2+1.2&&z>b.z1-1.2&&z<b.z2+1.2)d=0;else{const dh2=Math.hypot(x-h.x,z-h.z);if(dh2<9)d*=.35+.65*sstep(4,9,dh2);}}
-  {const gd=villGarden(x,z);if(gd>=0)d*=gd<.6?.5:0;}
-  if(x>0&&x<170&&z>-425&&z<-295){const pd=villPathD(x,z);if(pd<1.1)d*=pd<.42?0:pd<.75?.35:.7;if(Math.hypot(x-VILL.well.x,z-VILL.well.z)<2.4)d*=.2;}
-  {const sd=villStreetD(x,z);if(sd<3.6){const rut=Math.abs(Math.abs(sd)-.85);d*=sd<2.4?(rut<.35?0:.45):.7;}}
+  if(!(noVill&&x>VB.x0&&x<VB.x1&&z>VB.z0&&z<VB.z1))d*=villGrassK(x,z);
   for(const h of hotspots){if(!h.frag)continue;const k=Math.hypot(x-h.x,z-h.z)/(h.r*.4);if(k<1)d*=.45+.55*k*k;}
   {const k=Math.hypot(x-REDPINE.x,z-REDPINE.z)/REDPINE.r;if(k<1.15)d*=.3+.7*sstep(.55,1.15,k);}
   {const fk=floorK(x,z);if(fk>0)d*=1-.62*fk;}
@@ -296,7 +332,7 @@ function groundMix(x,z){const n1=fbm(x/46,z/46,3),n2=fbm(x/11+50,z/11,2),n3=fbm(
      m+=k*.9+kr*1.6;v+=k*.25;g*=1-k*.55-kr*.4;d*=1-k*.6;}
    for(const h of VILL.houses){const dh2=Math.hypot(x-h.x,z-h.z);if(dh2<12){const k=1-sstep(4.5,10,dh2);m+=k*.7;d+=k*.35;g*=1-k*.55;}}
    /* the vegetable gardens: dug dark earth */{const gd=villGarden(x,z);if(gd>=0){const k=sstep(0,.8,gd);d*=1-k*.85;m+=k*2.4;v+=k*.15;g*=1-k*.97;}}
-   /* the footpaths: bare trodden earth, a little muddy in the middle */if(x>0&&x<170&&z>-425&&z<-295){const pd=villPathD(x,z);if(pd<1){const k=1-sstep(.3,.95,pd);d+=k*1.1;m+=k*.35;g*=1-k*.75;}const wd=Math.hypot(x-VILL.well.x,z-VILL.well.z);if(wd<2.6){const k=1-sstep(1.2,2.6,wd);m+=k*.9;d+=k*.4;g*=1-k*.7;}}}
+   /* the footpaths: bare trodden earth, a little muddy in the middle */if(x>0&&x<205&&z>-445&&z<-265){const pd=villPathD(x,z);if(pd<1){const k=1-sstep(.3,.95,pd);d+=k*1.1;m+=k*.35;g*=1-k*.75;}const wd=Math.hypot(x-VILL.well.x,z-VILL.well.z);if(wd<2.6){const k=1-sstep(1.2,2.6,wd);m+=k*.9;d+=k*.4;g*=1-k*.7;}}}
   /* round each fragment the grass has died back a little: dry and thin, the soil showing - no puddles, no glow */
   for(const h of hotspots){if(!h.frag)continue;const k=Math.hypot(x-h.x,z-h.z)/(h.r*.45);if(k<1){d+=(1-k)*.9;m+=(1-k)*.25;g*=.35+.65*k;}}
   {const k=Math.hypot(x-REDPINE.x,z-REDPINE.z)/REDPINE.r;if(k<1.2){const e=1-sstep(.5,1.2,k);d+=e*1.1;m+=e*.35;g*=1-e*.75;}}
@@ -351,7 +387,10 @@ const FDEPTH=(()=>{const c=8,nx=Math.ceil(TERR.w/c)+1,nz=Math.ceil(TERR.d/c)+1,a
 /* height + grass density texture for the GPU grass */
 const HM=(function(){const n=512,nx=864,data=new Uint8Array(nx*n*4);
   for(let j=0;j<n;j++)for(let i=0;i<nx;i++){const x=TERR.x0+(i+.5)/nx*TERR.w,z=TERR.z0+(j+.5)/n*TERR.d;const k=(j*nx+i)*4;
-    data[k]=clamp((H(x,z)+5)/12*255,0,255);data[k+1]=clamp(grassDens(x,z)*255,0,255);data[k+2]=clamp((.5+.5*fbm(x/40+9,z/40,3))*(1-.58*sstep(.3,.95,FDEPTH.at(x,z)))*255,0,255);data[k+3]=clamp(tallGrass(x,z)*255,0,255);}
+    data[k]=clamp((H(x,z)+5)/12*255,0,255);data[k+1]=clamp(grassDens(x,z,true)*255,0,255);data[k+2]=clamp((.5+.5*fbm(x/40+9,z/40,3))*(1-.58*sstep(.3,.95,FDEPTH.at(x,z)))*255,0,255);data[k+3]=clamp(tallGrass(x,z)*255,0,255);}
+  const t=new T.DataTexture(data,nx,n,T.RGBAFormat,T.UnsignedByteType);t.magFilter=T.LinearFilter;t.minFilter=T.LinearFilter;t.needsUpdate=true;return t;})();
+const VGM=(function(){const res=1/3,nx=Math.round((VB.x1-VB.x0)/res),n=Math.round((VB.z1-VB.z0)/res),data=new Uint8Array(nx*n*4);
+  for(let j=0;j<n;j++)for(let i=0;i<nx;i++){const x=VB.x0+(i+.5)*res,z=VB.z0+(j+.5)*res,k=(j*nx+i)*4;data[k+1]=clamp(villGrassK(x,z)*255,0,255);data[k+3]=clamp(villTallK(x,z)*255,0,255);}
   const t=new T.DataTexture(data,nx,n,T.RGBAFormat,T.UnsignedByteType);t.magFilter=T.LinearFilter;t.minFilter=T.LinearFilter;t.needsUpdate=true;return t;})();
 /* fine heights over the basin patch (0.5 m) so blades and flowers sit on the causeway and the pool margins, and none
    grow under the water; the range is fitted to what is there */
@@ -373,7 +412,7 @@ const HM3=(function(){const B=WX.box,res=1.5,nx=Math.round((B.x1-B.x0)/res),n=Ma
 /* foliage is lit from its own outward normal on both faces (no back-face darkening) */
 const NOFLIP='vec3 normal=normalize(vNormal);vec3 geometryNormal=normal;';
 /* ---------- GPU grass: world-locked tufts in a ring around the camera ---------- */
-const GRASS={mesh:null,trail:[],uni:{uTrail:{value:Array.from({length:8},()=>new T.Vector4(0,0,-99,0))},uNPC:{value:V3(0,0,-999)},uCenter:{value:new T.Vector2()},uTime:{value:0},uHM:{value:HM},uTB:{value:new T.Vector4(TERR.x0,TERR.z0,TERR.w,TERR.d)},uCell:{value:.36},uR:{value:32},uPlayer:{value:V3()},uHM2:{value:HM2},uTB2:{value:new T.Vector4(DET.x0,DET.z0,DET.x1-DET.x0,DET.z1-DET.z0)},uHR2:{value:new T.Vector3(HM2.userData.mn,HM2.userData.mx-HM2.userData.mn,W3.wl)},uHM3:{value:HM3},uTB3:{value:new T.Vector4(WX.box.x0,WX.box.z0,WX.box.x1-WX.box.x0,WX.box.z1-WX.box.z0)}}};
+const GRASS={mesh:null,trail:[],uni:{uTrail:{value:Array.from({length:8},()=>new T.Vector4(0,0,-99,0))},uNPC:{value:V3(0,0,-999)},uCenter:{value:new T.Vector2()},uTime:{value:0},uHM:{value:HM},uTB:{value:new T.Vector4(TERR.x0,TERR.z0,TERR.w,TERR.d)},uCell:{value:.36},uR:{value:32},uPlayer:{value:V3()},uHM2:{value:HM2},uTB2:{value:new T.Vector4(DET.x0,DET.z0,DET.x1-DET.x0,DET.z1-DET.z0)},uHR2:{value:new T.Vector3(HM2.userData.mn,HM2.userData.mx-HM2.userData.mn,W3.wl)},uHM3:{value:HM3},uVM:{value:VGM},uVB:{value:new T.Vector4(VB.x0,VB.z0,VB.x1-VB.x0,VB.z1-VB.z0)},uTB3:{value:new T.Vector4(WX.box.x0,WX.box.z0,WX.box.x1-WX.box.x0,WX.box.z1-WX.box.z0)}}};
 function tuftGeo(){const pos=[],uv=[],idx=[];let vi=0;
   for(let b=0;b<6;b++){const a=R()*Math.PI*2,h=rnd(.28,.7),w=rnd(.016,.03),bend=rnd(.12,.42),ox=rnd(-.09,.09),oz=rnd(-.09,.09);
     const dx=Math.cos(a),dz=Math.sin(a),px=-dz,pz=dx;const S=4;
@@ -386,10 +425,10 @@ grassMat.onBeforeCompile=s=>{Object.assign(s.uniforms,GRASS.uni);
   s.vertexShader=`attribute vec2 aOff;uniform vec2 uCenter;uniform float uTime,uCell,uR;uniform sampler2D uHM;uniform vec4 uTB;uniform vec3 uPlayer;uniform vec4 uTrail[8];uniform vec3 uNPC;varying float vT;varying vec3 vGC;varying float vFs;
   /* sine-free hash: sin() of large cell coordinates loses precision far from the origin and collapses to 0 */
   float gh(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
-  uniform sampler2D uHM2;uniform vec4 uTB2;uniform vec3 uHR2;uniform sampler2D uHM3;uniform vec4 uTB3;
+  uniform sampler2D uHM2;uniform vec4 uTB2;uniform vec3 uHR2;uniform sampler2D uHM3;uniform vec4 uTB3;uniform sampler2D uVM;uniform vec4 uVB;
   /* height in metres + density channels; over the basin the fine heights, and nothing below the waterline */
   vec4 hmD(sampler2D hm1,vec2 wp,vec4 tb){if(wp.x<tb.x){vec2 u3=(wp-uTB3.xy)/uTB3.zw;vec4 h3=texture2D(uHM3,u3);h3.r=h3.r*12.-5.;if(u3.x<0.||u3.y<0.||u3.x>1.||u3.y>1.){h3.g=0.;h3.a=0.;}return h3;}vec4 h=texture2D(hm1,(wp-tb.xy)/tb.zw);h.r=h.r*12.-5.;vec2 u=(wp-uTB2.xy)/uTB2.zw;
-    if(u.x>0.&&u.y>0.&&u.x<1.&&u.y<1.){h.r=texture2D(uHM2,u).r*uHR2.y+uHR2.x;if(h.r<uHR2.z+.06){h.g=0.;h.a=0.;}}return h;}
+    if(u.x>0.&&u.y>0.&&u.x<1.&&u.y<1.){h.r=texture2D(uHM2,u).r*uHR2.y+uHR2.x;if(h.r<uHR2.z+.06){h.g=0.;h.a=0.;}}vec2 uv5=(wp-uVB.xy)/uVB.zw;if(uv5.x>0.&&uv5.y>0.&&uv5.x<1.&&uv5.y<1.){vec4 vm=texture2D(uVM,uv5);h.g*=vm.g;h.a*=vm.a;}return h;}
   `+s.vertexShader.replace('#include <beginnormal_vertex>','vec3 objectNormal=vec3(0.0,1.0,0.0);')
   .replace('#include <begin_vertex>',`
   vec2 cell=uCenter+aOff;float gR1=gh(cell),gR2=gh(cell+17.31),gR3=gh(cell+5.17),gR4=gh(cell+41.9);
@@ -449,10 +488,10 @@ const flowerMat=std({map:TX.flowers,alphaTest:.5,side:T.DoubleSide,roughness:.78
 flowerMat.onBeforeCompile=s=>{Object.assign(s.uniforms,GRASS.uni,FLOWERS.uni);
   s.vertexShader=`attribute vec2 aOff;uniform vec2 uFC;uniform float uFCell,uTime,uR;uniform sampler2D uHM,uFM;uniform vec4 uTB;uniform vec3 uPlayer;varying float vFD;
   float gh(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
-  uniform sampler2D uHM2;uniform vec4 uTB2;uniform vec3 uHR2;uniform sampler2D uHM3;uniform vec4 uTB3;
+  uniform sampler2D uHM2;uniform vec4 uTB2;uniform vec3 uHR2;uniform sampler2D uHM3;uniform vec4 uTB3;uniform sampler2D uVM;uniform vec4 uVB;
   /* height in metres + density channels; over the basin the fine heights, and nothing below the waterline */
   vec4 hmD(sampler2D hm1,vec2 wp,vec4 tb){if(wp.x<tb.x){vec2 u3=(wp-uTB3.xy)/uTB3.zw;vec4 h3=texture2D(uHM3,u3);h3.r=h3.r*12.-5.;if(u3.x<0.||u3.y<0.||u3.x>1.||u3.y>1.){h3.g=0.;h3.a=0.;}return h3;}vec4 h=texture2D(hm1,(wp-tb.xy)/tb.zw);h.r=h.r*12.-5.;vec2 u=(wp-uTB2.xy)/uTB2.zw;
-    if(u.x>0.&&u.y>0.&&u.x<1.&&u.y<1.){h.r=texture2D(uHM2,u).r*uHR2.y+uHR2.x;if(h.r<uHR2.z+.06){h.g=0.;h.a=0.;}}return h;}
+    if(u.x>0.&&u.y>0.&&u.x<1.&&u.y<1.){h.r=texture2D(uHM2,u).r*uHR2.y+uHR2.x;if(h.r<uHR2.z+.06){h.g=0.;h.a=0.;}}vec2 uv5=(wp-uVB.xy)/uVB.zw;if(uv5.x>0.&&uv5.y>0.&&uv5.x<1.&&uv5.y<1.){vec4 vm=texture2D(uVM,uv5);h.g*=vm.g;h.a*=vm.a;}return h;}
   `+s.vertexShader.replace('#include <uv_vertex>',`#include <uv_vertex>
   vec2 cell=uFC+aOff;float r1=gh(cell+3.1),r2=gh(cell+11.7),r3=gh(cell+23.3),r4=gh(cell+47.9);
   vec2 wp=(cell+vec2(r1,r2))*uFCell;vec4 hm=hmD(uHM,wp,uTB),fm=texture2D(uFM,(wp-uTB.xy)/uTB.zw);

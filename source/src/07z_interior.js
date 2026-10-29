@@ -149,10 +149,10 @@ function paperMesh(par,kind,seed,x,y,z,rot,sc=1){const r=rng(seed+7);const g=new
 
 /* ---- ZIL-Moskva refrigerator: rounded enamel cabinet, lever handle, chrome script badge ---- */
 function zilFridge(par,x,y,z,ry){const f=new T.Group();f.position.set(x,y,z);f.rotation.y=ry;par.add(f);
-  const enT=tex(256,512,(g,w,h)=>{g.fillStyle='#d9d0b4';g.fillRect(0,0,w,h);pix2(g,w,h,.18);const r=rng(11);
+  const enT=memo('fridgeEn',()=>tex(256,512,(g,w,h)=>{g.fillStyle='#d9d0b4';g.fillRect(0,0,w,h);pix2(g,w,h,.18);const r=rng(11);
     for(let i=0;i<22;i++){const xx=r()*w,yy=h*(.86+r()*.14),L=8+r()*40;const gr=g.createLinearGradient(0,yy-L,0,yy);gr.addColorStop(0,'rgba(110,60,25,0)');gr.addColorStop(1,`rgba(110,60,25,${.25+r()*.35})`);g.fillStyle=gr;g.fillRect(xx,yy-L,2+r()*4,L);}
     const gr=g.createLinearGradient(0,h*.55,0,h);gr.addColorStop(0,'rgba(90,70,40,0)');gr.addColorStop(1,'rgba(90,70,40,.35)');g.fillStyle=gr;g.fillRect(0,0,w,h);
-    });
+    }));
   const en=std({map:enT,roughness:.32,metalness:0,envMapIntensity:.9}),chrome=std({color:C(0xd6d6d2),metalness:1,roughness:.16,envMapIntensity:1.4}),dark=std({color:C(0x16140f),roughness:.8});
   const W=.64,D=.62,H=1.58;
   mesh(rbox(W,H-.08,D,.07),en,0,(H-.08)/2+.06,0,f);
@@ -165,7 +165,7 @@ function zilFridge(par,x,y,z,ry){const f=new T.Group();f.position.set(x,y,z);f.r
   mesh(rbox(.05,.03,.04,.008),chrome,.22,H*.62,.06,door);const lv=new T.Group();lv.position.set(.22,H*.62,.085);lv.rotation.z=-.12;door.add(lv);
   mesh(rbox(.2,.035,.03,.012),chrome,-.08,0,0,lv);mesh(new T.CylinderGeometry(.022,.022,.03,14),chrome,0,0,0,lv).rotation.x=Math.PI/2;
   /* badge: chrome script on a dark field */
-  const bt=tex(256,64,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#e8e8e2';g.font='italic bold 46px "Times New Roman",serif';g.textAlign='center';g.fillText('ЗИЛ',w/2-40,46);g.font='italic 22px serif';g.fillText('Москва',w/2+60,44);},{clamp:true});
+  const bt=memo('fridgeBadge',()=>tex(256,64,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#e8e8e2';g.font='italic bold 46px "Times New Roman",serif';g.textAlign='center';g.fillText('ЗИЛ',w/2-40,46);g.font='italic 22px serif';g.fillText('Москва',w/2+60,44);},{clamp:true}));
   const bm=mesh(new T.PlaneGeometry(.3,.075),std({map:bt,transparent:true,metalness:1,roughness:.2,envMapIntensity:1.6}),-.04,H*.82,.044,door,false);
   /* chrome trim strip and the vent grille at the bottom */
   mesh(rbox(W-.12,.012,.01,.004),chrome,0,H*.76,.044,door);
@@ -175,13 +175,13 @@ function zilFridge(par,x,y,z,ry){const f=new T.Group();f.position.set(x,y,z);f.r
 /* ---- Russian stove (pech): whitewashed brick mass, arched mouth with a ledge, firewood niche below, warming bench
    on top, chimney breast to the ceiling, little drying niches, soot; cast-iron pot, oven fork, iron damper ---- */
 function russianStove(par,x,y,z,ceil){const s=new T.Group();s.position.set(x,y,z);par.add(s);const Wd=1.55,Dp=1.85,H=1.55;
-  const wT=tex(512,512,(g,w,h)=>{g.fillStyle='#d8d4c8';g.fillRect(0,0,w,h);const r=rng(5);
+  const wT=memo('stoveW',()=>tex(512,512,(g,w,h)=>{g.fillStyle='#d8d4c8';g.fillRect(0,0,w,h);const r=rng(5);
     /* bricks showing through where the whitewash has flaked */
     for(let k=0;k<5;k++){/* flaked patches: a few clusters of bricks with mortar lines, edges of the whitewash ragged */
       const cx=r()*w,cy=r()*h,rad=20+r()*40;for(let row=0;row<26;row++)for(let c=0;c<9;c++){const bx=c*58+(row%2)*29,by=row*20;const d=Math.hypot(bx+27-cx,by+9-cy);if(d>rad*(.7+r()*.6))continue;
         g.fillStyle=`rgb(${118+r()*22},${78+r()*16},${62+r()*12})`;g.fillRect(bx+3,by+3,52,14);}}
     pix2(g,w,h,.5);
-    const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(60,55,45,.25)');gr.addColorStop(.6,'rgba(60,55,45,0)');gr.addColorStop(1,'rgba(80,70,55,.3)');g.fillStyle=gr;g.fillRect(0,0,w,h);});
+    const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(60,55,45,.25)');gr.addColorStop(.6,'rgba(60,55,45,0)');gr.addColorStop(1,'rgba(80,70,55,.3)');g.fillStyle=gr;g.fillRect(0,0,w,h);}));
   const wh=std({map:wT,roughness:.95,envMapIntensity:.25}),soot=std({color:C(0x0c0b0a),roughness:1}),iron=std({color:C(0x24221f),roughness:.6,metalness:.6});
   /* body built around the mouth: front slab with real openings */
   const fs=new T.Shape();fs.moveTo(-Wd/2,0);fs.lineTo(Wd/2,0);fs.lineTo(Wd/2,H);fs.lineTo(-Wd/2,H);fs.closePath();
@@ -194,7 +194,7 @@ function russianStove(par,x,y,z,ceil){const s=new T.Group();s.position.set(x,y,z
   for(let i=0;i<6;i++){const l=mesh(xf(new T.CylinderGeometry(.045,.05,.48,6),0,0,0,Math.PI/2,0,0),M.logs,-.22+(i%3)*.15+(i>2?.07:0),.12+(i>2?.09:0),Dp/2-.45,s);l.rotation.z=(i*.7)%1*.2;}
   /* ledge (shestok) under the mouth and soot licking up the face above it */
   mesh(rbox(Wd+.04,.08,.32,.02),wh,0,.84,Dp/2+.1,s);
-  const st=tex(128,256,(g,w,h)=>{const gr=g.createRadialGradient(w/2,h,10,w/2,h*.75,h*.8);gr.addColorStop(0,'rgba(10,9,8,.95)');gr.addColorStop(.5,'rgba(20,18,15,.5)');gr.addColorStop(1,'rgba(20,18,15,0)');g.fillStyle=gr;g.fillRect(0,0,w,h);},{clamp:true});
+  const st=memo('stoveSt',()=>tex(128,256,(g,w,h)=>{const gr=g.createRadialGradient(w/2,h,10,w/2,h*.75,h*.8);gr.addColorStop(0,'rgba(10,9,8,.95)');gr.addColorStop(.5,'rgba(20,18,15,.5)');gr.addColorStop(1,'rgba(20,18,15,0)');g.fillStyle=gr;g.fillRect(0,0,w,h);},{clamp:true}));
   mesh(new T.PlaneGeometry(.8,.7),std({map:st,transparent:true,depthWrite:false,roughness:1,polygonOffset:true,polygonOffsetFactor:-3}),0,1.45,Dp/2+.023,s,false);
   /* the top: a stepped cornice belt under the sleeping bench (lezhanka), its slab with a rounded lip; a patchwork quilt and
      a pillow on it. Over the back of it the chimney breast rises in two stages to the ceiling - a broad lower stage with
@@ -202,8 +202,8 @@ function russianStove(par,x,y,z,ceil){const s=new T.Group();s.position.set(x,y,z
      handle - then the narrower flue with a moulded collar where it meets the ceiling */
   mesh(rbox(Wd+.05,.05,Dp+.05,.012),wh,0,H-.06,0,s);mesh(rbox(Wd+.1,.035,Dp+.1,.01),wh,0,H-.015,0,s);
   mesh(rbox(Wd+.08,.08,Dp+.06,.03),wh,0,H+.04,0,s);
-  const quilt=tex(256,256,(g,w,h)=>{const r=rng(17);const cols=['#7a3a32','#3e5a6a','#8a7a4a','#5a6a3a','#6a4a5a','#9a8a6a'];for(let y=0;y<8;y++)for(let x=0;x<8;x++){g.fillStyle=cols[Math.floor(r()*cols.length)];g.fillRect(x*32,y*32,32,32);
-      g.strokeStyle='rgba(230,220,200,.5)';g.setLineDash([3,3]);g.strokeRect(x*32+3,y*32+3,26,26);}const im=g.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){const k=.8+Math.random()*.3;d[i]*=k;d[i+1]*=k;d[i+2]*=k;}g.putImageData(im,0,0);});
+  const quilt=memo('stoveQuilt',()=>tex(256,256,(g,w,h)=>{const r=rng(17);const cols=['#7a3a32','#3e5a6a','#8a7a4a','#5a6a3a','#6a4a5a','#9a8a6a'];for(let y=0;y<8;y++)for(let x=0;x<8;x++){g.fillStyle=cols[Math.floor(r()*cols.length)];g.fillRect(x*32,y*32,32,32);
+      g.strokeStyle='rgba(230,220,200,.5)';g.setLineDash([3,3]);g.strokeRect(x*32+3,y*32+3,26,26);}const im=g.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){const k=.8+Math.random()*.3;d[i]*=k;d[i+1]*=k;d[i+2]*=k;}g.putImageData(im,0,0);}));
   {const qg=new T.PlaneGeometry(Wd-.1,Dp*.55,16,12);const p=qg.attributes.position;for(let i=0;i<p.count;i++){const u=p.getX(i),v=p.getY(i);p.setZ(i,.02+Math.max(0,Math.sin(u*9+v*6)*.012+Math.cos(v*11)*.008));}qg.computeVertexNormals();
    const q=mesh(qg,std({map:quilt,roughness:1,envMapIntensity:.15}),0,H+.081,Dp*.18,s,false);q.rotation.x=-Math.PI/2;q.receiveShadow=true;
    const pl=mesh(new T.SphereGeometry(.2,14,10),std({map:TX.cloth,color:C(0xe4dccc),roughness:1}),-.45,H+.15,Dp/2-.35,s);pl.scale.set(1.2,.35,.8);}
@@ -248,20 +248,35 @@ function wardrobe(par,x,y,z,ry){const w=new T.Group();w.position.set(x,y,z);w.ro
 const KLEENKA=tex(256,256,(g,w,h)=>{g.fillStyle='#c9c3ae';g.fillRect(0,0,w,h);for(let y=0;y<8;y++)for(let x=0;x<8;x++)if((x+y)%2){g.fillStyle='rgba(70,100,120,.35)';g.fillRect(x*32,y*32,32,32);}
   g.strokeStyle='rgba(150,60,50,.45)';g.lineWidth=3;for(let i=0;i<16;i++){g.beginPath();g.arc(i*16+8,10,6,0,Math.PI);g.stroke();}pix2(g,w,h,.5);},{rep:[2,2]});
 /* ---- striped rag runner ---- */
-function ragRunner(par,x,y,z,len,wd,ry){const t=tex(64,512,(g,w,h)=>{const r=rng(3);let yy=0;const cols=['#5a4038','#3e4650','#6e6656','#4a5040','#625a50','#4e3e44','#7a7060'];
+function ragRunner(par,x,y,z,len,wd,ry){const t=memo('rag',()=>tex(64,512,(g,w,h)=>{const r=rng(3);let yy=0;const cols=['#5a4038','#3e4650','#6e6656','#4a5040','#625a50','#4e3e44','#7a7060'];
     while(yy<h){const sh=4+r()*20;g.fillStyle=cols[Math.floor(r()*cols.length)];g.fillRect(0,yy,w,sh);yy+=sh;}
-    const im=g.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){const k=.75+((i/4)%2)*.1+Math.random()*.15;d[i]*=k;d[i+1]*=k;d[i+2]*=k;}g.putImageData(im,0,0);});
+    const im=g.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){const k=.75+((i/4)%2)*.1+Math.random()*.15;d[i]*=k;d[i+1]*=k;d[i+2]*=k;}g.putImageData(im,0,0);}));
   const g=new T.PlaneGeometry(wd,len,6,40);const p=g.attributes.position;for(let i=0;i<p.count;i++){const u=p.getX(i),v=p.getY(i);p.setZ(i,Math.max(0,Math.sin(v*7+u*2)*.006+Math.sin(v*2.3)*.004));}g.computeVertexNormals();
   const m=mesh(g,std({map:t,roughness:1,envMapIntensity:.15}),x,y,z,par,false);m.rotation.set(-Math.PI/2,0,ry);m.receiveShadow=true;return m;}
 /* ---- washstand with an enamel basin and a hanging tin washer, towel on a nail ---- */
 function washstand(par,x,y,z,ry){const w=new T.Group();w.position.set(x,y,z);w.rotation.y=ry;par.add(w);
-  mesh(rbox(.5,.75,.36,.01),M.boards,0,.375,0,w);mesh(lathe([[0,0],[.12,0],[.17,.06],[.18,.09],[0,.09]],16),M.enamel,0,.75,0,w);
-  const tin=std({color:C(0x8c8e88),metalness:.8,roughness:.4});mesh(lathe([[0,0],[.03,.0],[.09,.1],[.1,.26],[0,.26]],12),tin,0,1.05,-.12,w);mesh(new T.CylinderGeometry(.008,.008,.08,5),tin,0,1.02,-.12,w);
-  mesh(rbox(.06,.4,.01,.005),std({map:TX.cloth,color:C(0xd8d0bc),roughness:1,side:T.DoubleSide}),.3,1.05,-.16,w);return w;}
+  /* the village washstand: a painted cupboard with the enamel basin let into its top, the backboard standing up behind
+     carrying the tin cistern with its push-valve spout over the basin, a little mirror, the soap dish and a towel on its peg */
+  const pt=std({map:RF.PAINT.map,color:C(0xd8dccc),roughness:.55,envMapIntensity:.35}),tin=std({color:C(0x9a9c96),metalness:.8,roughness:.35,envMapIntensity:.8});
+  const W=.56,H=.78,D=.42;mesh(rbox(W,H-.06,D,.008),pt,0,.06+(H-.06)/2,0,w);[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>mesh(rbox(.05,.06,.05,.006),pt,a*(W/2-.03),.03,b*(D/2-.03),w));
+  mesh(rbox(W-.08,H-.2,.018,.006),pt,0,.42,D/2+.004,w);mesh(rbox(W-.14,H-.28,.012,.005),pt,0,.42,D/2+.014,w);mesh(new T.SphereGeometry(.016,10,8),M.rust,W/2-.09,.46,D/2+.025,w);
+  mesh(rbox(W+.04,.03,D+.03,.006),pt,0,H+.015,0,w);
+  mesh(lathe([[0,-.11],[.1,-.1],[.16,-.05],[.19,0],[.205,.008],[.2,.012],[.17,-.03],[.1,-.085],[0,-.095]],24),M.enamel,0,H+.03,.04,w);
+  /* backboard, cistern, spout */
+  const bb=mesh(rbox(W,.74,.025,.006),pt,0,H+.03+.37,-D/2+.0125,w);mesh(rbox(W+.04,.04,.06,.008),pt,0,H+.03+.76,-D/2+.03,w);
+  const cz=-D/2+.025+.1;mesh(new T.CylinderGeometry(.1,.1,.26,20),tin,-.1,H+.5,cz,w);mesh(new T.CylinderGeometry(.106,.106,.025,20),tin,-.1,H+.645,cz,w);mesh(new T.SphereGeometry(.015,8,6),tin,-.1,H+.67,cz,w);
+  mesh(new T.ConeGeometry(.1,.08,20),tin,-.1,H+.33,cz,w).rotation.x=Math.PI;mesh(new T.CylinderGeometry(.008,.008,.14,8),tin,-.1,H+.23,cz,w);mesh(new T.SphereGeometry(.014,8,6),tin,-.1,H+.16,cz,w);
+  mesh(rbox(.05,.3,.012,.003),tin,-.1,H+.5,-D/2+.031,w);
+  const mi=new T.Group();mi.position.set(.15,H+.46,-D/2+.03);w.add(mi);mesh(rbox(.2,.27,.016,.004),RF.W3,0,0,0,mi);mesh(new T.PlaneGeometry(.17,.24),RF.MIRR,0,0,.009,mi);
+  mesh(lathe([[0,0],[.045,0],[.05,.015],[.04,.02],[0,.012]],14),M.enamel,.18,H+.03,-.1,w);mesh(rbox(.07,.022,.045,.012),std({color:C(0xd8c890),roughness:.6}),.18,H+.05,-.1,w);
+  mesh(new T.CylinderGeometry(.008,.008,.06,6),RF.W3,W/2+.025,H+.68,-D/2+.0125,w).rotation.z=Math.PI/2;
+  const tw=new T.PlaneGeometry(.16,.5,1,6);const tp=tw.attributes.position;for(let i=0;i<tp.count;i++)tp.setZ(i,Math.sin((tp.getY(i)+.25)*6)*.006);tw.computeVertexNormals();
+  mesh(tw,std({map:TX.cloth,color:C(0xf0ece0),roughness:1,side:T.DoubleSide}),W/2+.04,H+.43,-D/2+.06,w).rotation.y=Math.PI/2;
+  RF.fin(w);return w;}
 /* ---- pendulum wall clock (khodiki) with weights on chains ---- */
 function wallClock(par,x,y,z,ry){const c=new T.Group();c.position.set(x,y,z);c.rotation.y=ry;par.add(c);
-  const face=tex(128,128,(g,w,h)=>{g.fillStyle='#e8e0c8';g.beginPath();g.arc(64,64,62,0,7);g.fill();g.fillStyle='#222';g.font='bold 14px serif';g.textAlign='center';
-    for(let i=1;i<=12;i++){const a=i/12*Math.PI*2;g.fillText(i,64+Math.sin(a)*48,69-Math.cos(a)*48);}g.lineWidth=3;g.strokeStyle='#222';g.beginPath();g.moveTo(64,64);g.lineTo(64+20,64-20);g.moveTo(64,64);g.lineTo(64,24);g.stroke();},{clamp:true});
+  const face=memo('clockFace',()=>tex(128,128,(g,w,h)=>{g.fillStyle='#e8e0c8';g.beginPath();g.arc(64,64,62,0,7);g.fill();g.fillStyle='#222';g.font='bold 14px serif';g.textAlign='center';
+    for(let i=1;i<=12;i++){const a=i/12*Math.PI*2;g.fillText(i,64+Math.sin(a)*48,69-Math.cos(a)*48);}g.lineWidth=3;g.strokeStyle='#222';g.beginPath();g.moveTo(64,64);g.lineTo(64+20,64-20);g.moveTo(64,64);g.lineTo(64,24);g.stroke();},{clamp:true}));
   mesh(rbox(.2,.24,.05,.01),std({color:C(0x7a5a30),roughness:.6}),0,0,0,c);mesh(new T.CircleGeometry(.08,20),std({map:face,roughness:.6}),0,0,.026,c,false);
   const br=std({color:C(0x9a7a40),metalness:.8,roughness:.35});mesh(new T.CylinderGeometry(.004,.004,.42,4),br,0,-.33,.01,c);mesh(new T.CylinderGeometry(.03,.03,.012,12),br,0,-.55,.01,c).rotation.x=Math.PI/2;
   [-.05,.05].forEach((dx,i)=>{mesh(new T.CylinderGeometry(.003,.003,.35+i*.12,4),br,dx,-.3-i*.06,.0,c);mesh(new T.CylinderGeometry(.018,.018,.08,8),br,dx,-.5-i*.12,0,c);});

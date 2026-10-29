@@ -21,13 +21,20 @@ function lines(segs){const pos=[];segs.forEach(pts=>{for(let i=0;i<pts.length-1;
   for(let i=0;i<6;i++)mesh(rbox(1,.1,.1,.02),std({color:i%2?C(0xd8d4c8):C(0xa52a22),roughness:.7,map:TX.rust}),i*1-2.5,.06,0,bar);
   [[-62,-300,.6],[-20,-326,2.4],[60,-418,1.1],[78,-446,-.6],[22,-346,.3],[HX-10,HZ+10,.4],[HX+12,HZ+9,-.3]].forEach(s=>radSign(s[0],s[1],s[2],(hash(s[0],s[1])-.5)*.25));
 })();
-(function powerLine(){const a=V3(-210,0,-306),b=V3(230,0,-354);const n=11;const tops=[];
-  for(let i=0;i<=n;i++){const t=i/n;const x=lerp(a.x,b.x,t),z=lerp(a.z,b.z,t);const y=H(x,z);const g=new T.Group();g.position.set(x,y,z);g.rotation.y=Math.atan2(b.x-a.x,b.z-a.z);
+(function powerLine(){const a=V3(-210,0,-306),b=V3(230,0,-354);const tops=[];
+  /* a pole every 40 m or so, but never in a yard, a garden, on a path, an alley or a street: where the ideal spot is taken
+     it moves along the line to the nearest clear one (the spans run 22-60 m through the village, as they do) */
+  const Ln=a.distanceTo(b),clearAt=(x,z)=>!(VILL.houses.some(h=>{const r=h.prect;return x>r.x1-.9&&x<r.x2+.9&&z>r.z1-.9&&z<r.z2+.9;})||villPathD(x,z)<1.4||villStreetD(x,z)<4.5);
+  const ts=[0];while(true){const prev=ts[ts.length-1],t0=prev+40/Ln;if(t0>1-15/Ln)break;let best=null;
+    for(let k=0;k<64&&best===null;k++)for(const sg of [1,-1]){const t=t0+sg*k*.0025;if(t-prev<22/Ln)continue;if(clearAt(lerp(a.x,b.x,t),lerp(a.z,b.z,t))){best=t;break;}}
+    ts.push(best===null?t0:best);}ts.push(1);
+  for(let i=0;i<ts.length;i++){const t=ts[i];
+    const x=lerp(a.x,b.x,t),z=lerp(a.z,b.z,t);const y=H(x,z);const g=new T.Group();g.position.set(x,y,z);g.rotation.y=Math.atan2(b.x-a.x,b.z-a.z);
     const lean=i===4?.22:(hash(i,9)-.5)*.06;g.rotation.z=lean;scene.add(g);
     mesh(G('ppole',()=>xf(new T.CylinderGeometry(.11,.15,9,8),0,4.2,0)),M.post,0,0,0,g);mesh(G('parm',()=>rbox(.12,.12,1.9,.01)),M.post,0,8.1,0,g);
     [-.8,0,.8].forEach(dz=>mesh(G('insul',()=>lathe([[.0,0],[.05,0],[.06,.04],[.04,.06],[.06,.09],[.04,.11],[.03,.16],[0,.16]],10)),M.enamel,0,8.17,dz,g));
     g.updateWorldMatrix(true,false);tops.push([-.8,0,.8].map(dz=>V3(0,8.32,dz).applyMatrix4(g.matrixWorld)));solids.push({cx:x,cz:z,r:.2});}
-  const segs=[];for(let i=0;i<n;i++)for(let k=0;k<3;k++){if(i===6&&k===2){const p=tops[i][k];segs.push(catenary(p,V3(p.x+4,H(p.x+4,p.z+2)+.05,p.z+2),.5,8));continue;}segs.push(catenary(tops[i][k],tops[i+1][k],1.1,16));}
+  const segs=[];for(let i=0;i<ts.length-1;i++)for(let k=0;k<3;k++){if(i===6&&k===2){const p=tops[i][k];segs.push(catenary(p,V3(p.x+4,H(p.x+4,p.z+2)+.05,p.z+2),.5,8));continue;}segs.push(catenary(tops[i][k],tops[i+1][k],1.1,16));}
   lines(segs);})();
 function uazWreck(x,z,rot=[.035,.9,-.07],dy=.02){/* abandoned UAZ-469, stripped and rusting */
   const g=new T.Group();g.position.set(x,H(x,z)+dy,z);g.rotation.set(rot[0],rot[1],rot[2]);scene.add(g);const rp=M.rustpaint,rm=M.rust;
