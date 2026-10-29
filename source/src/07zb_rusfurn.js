@@ -182,3 +182,74 @@ function deerRug(par,x,y,z,ry,w,h){const t=memo('deer',()=>tex(256,192,(c,W,H)=>
     deer(W*.38,H*.72,1.1,1);deer(W*.66,H*.76,.9,-1);c.strokeStyle='#c8a860';c.lineWidth=5;c.strokeRect(5,5,W-10,H-10);
     const im=c.getImageData(0,0,W,H),d=im.data;for(let i=0;i<d.length;i+=4){const k=.82+Math.random()*.3;d[i]*=k;d[i+1]*=k;d[i+2]*=k;}c.putImageData(im,0,0);}));
   const m=mesh(new T.PlaneGeometry(w,h),std({map:t,roughness:1,envMapIntensity:.1}),x,y,z,par,false);m.rotation.y=ry;return m;}
+/* ---------- the things of a lived-in house and yard, each modelled to scale and standing on what it stands on ---------- */
+const LV=(()=>{const R=RF;const m=(k,f)=>memo('lv_'+k,f);
+  const ENAM=m('enam',()=>std({color:C(0xe8e6de),roughness:.22,envMapIntensity:.9})),ENB=m('enb',()=>std({color:C(0x2a4a7a),roughness:.25,envMapIntensity:.8})),ENR=m('enr',()=>std({color:C(0x8a2a22),roughness:.25,envMapIntensity:.8}));
+  const ZN=m('zinc',()=>std({color:C(0xa4a8a6),metalness:.85,roughness:.38,envMapIntensity:.9,side:T.DoubleSide})),CHR=m('chrome',()=>std({color:C(0xd8dad8),metalness:1,roughness:.12,envMapIntensity:1.5}));
+  const BREAD=m('bread',()=>std({map:tex(64,64,(c,w,h)=>{c.fillStyle='#8a5428';c.fillRect(0,0,w,h);const q=rng(5);for(let i=0;i<200;i++){c.fillStyle=`rgba(${60+q()*60|0},${30+q()*30|0},10,${q()*.4})`;c.fillRect(q()*w,q()*h,2,2);}}),roughness:.85}));
+  const CRUMB=m('crumb',()=>std({color:C(0xd8c49a),roughness:1})),FELT=m('felt',()=>std({map:TX.cloth,color:C(0x5a5650),roughness:1})),RUB=m('rubber',()=>std({color:C(0x1a1a1a),roughness:.6}));
+  const WATER=m('water',()=>std({color:C(0x1a2420),roughness:.05,metalness:.1,envMapIntensity:1.2}));
+  /* a cup of tea on its saucer, a teaspoon in it */
+  const teacup=(g,x,y,z,ry=0)=>{const c=R.G(g,x,y,z,ry);R.cup(c,0,0,0);mesh(new T.CircleGeometry(.034,18),m('tea',()=>std({color:C(0x4a2a10),roughness:.05,envMapIntensity:1.2})),0,.058,0,c,false).rotation.x=-Math.PI/2;
+    const sp=mesh(new T.CylinderGeometry(.003,.004,.12,6),R.TIN,.015,.07,.01,c);sp.rotation.z=.45;return c;};
+  /* the teapot: round belly, spout, handle, lid with its knob, a painted band */
+  const teapot=(g,x,y,z,ry=0)=>{const t=R.G(g,x,y,z,ry);mesh(lathe([[0,0],[.05,0],[.075,.03],[.08,.07],[.07,.1],[.045,.115],[0,.115]],24),R.PORC,0,0,0,t);mesh(lathe([[0,0],[.045,0],[.043,.012],[.012,.02],[.008,.035],[0,.035]],18),R.PORC,0,.112,0,t);
+    const sp=new T.TubeGeometry(new T.CatmullRomCurve3([V3(.07,.035,0),V3(.1,.06,0),V3(.125,.1,0)]),10,.011,8);mesh(sp,R.PORC,0,0,0,t);
+    const hd=new T.TubeGeometry(new T.CatmullRomCurve3([V3(-.07,.09,0),V3(-.11,.085,0),V3(-.115,.05,0),V3(-.075,.025,0)]),12,.008,8);mesh(hd,R.PORC,0,0,0,t);
+    mesh(new T.TorusGeometry(.079,.004,6,32),m('band',()=>std({color:C(0x2a5a9a),roughness:.3})),0,.06,0,t).rotation.x=Math.PI/2;return t;};
+  /* a loaf of black bread on its board, the end cut, the knife beside it */
+  const loaf=(g,x,y,z,ry=0)=>{const b=R.G(g,x,y,z,ry);mesh(rbox(.34,.02,.22,.006),R.W2,0,.01,0,b);const l=mesh(new T.SphereGeometry(.5,24,14),BREAD,-.02,.06,0,b);l.scale.set(.24,.1,.12);
+    mesh(new T.CylinderGeometry(.052,.052,.01,20),CRUMB,.1,.052,0,b).rotation.z=Math.PI/2;mesh(rbox(.2,.003,.025,.001),R.TIN,.03,.025,.08,b).rotation.y=.2;mesh(rbox(.09,.012,.018,.004),R.W3,-.11,.026,.095,b).rotation.y=.2;return b;};
+  /* the three-litre jar of pickled cucumbers under its tin lid */
+  const pickles=(g,x,y,z)=>{const j=R.G(g,x,y,z,0);const v=mesh(lathe([[0,0],[.075,0],[.08,.02],[.08,.2],[.06,.24],[.045,.25],[.045,.265],[0,.265]],24),R.CRYS,0,0,0,j);v.renderOrder=3;
+    for(let i=0;i<6;i++){const c=mesh(new T.CylinderGeometry(.018,.018,.16,10),m('cuc',()=>std({color:C(0x3a5a22),roughness:.5})),Math.cos(i)*.04,.1,Math.sin(i)*.04,j);c.rotation.z=(i%2?.15:-.12);}
+    mesh(new T.CylinderGeometry(.05,.05,.015,20),R.TIN,0,.27,0,j);return j;};
+  /* the electric samovar: chrome urn on its foot, the tap, the side handles, the teapot keeping warm on top */
+  const samovar=(g,x,y,z,ry=0)=>{const s=R.G(g,x,y,z,ry);mesh(lathe([[0,0],[.09,0],[.07,.03],[.05,.06],[.11,.1],[.13,.2],[.125,.33],[.1,.38],[.07,.39],[0,.39]],32),CHR,0,0,0,s);
+    const tp=mesh(new T.CylinderGeometry(.012,.014,.07,10),CHR,0,.12,.12,s);tp.rotation.x=Math.PI/2;mesh(rbox(.03,.03,.02,.006),R.W3,0,.13,.165,s);
+    [-1,1].forEach(k=>{const hd=new T.TubeGeometry(new T.CatmullRomCurve3([V3(k*.125,.3,0),V3(k*.16,.31,0),V3(k*.165,.27,0),V3(k*.13,.25,0)]),10,.008,8);mesh(hd,R.W3,0,0,0,s);});
+    teapot(s,0,.39,0,1.2);return s;};
+  /* a zinc bucket, water in it or not, its bail */
+  const bucket=(g,x,y,z,water,ry=0)=>{const b=R.G(g,x,y,z,ry);mesh(new T.CylinderGeometry(.15,.11,.28,28,1,true),ZN,0,.14,0,b);mesh(new T.CircleGeometry(.11,24),ZN,0,.003,0,b).rotation.x=-Math.PI/2;
+    mesh(new T.TorusGeometry(.15,.006,6,32),ZN,0,.28,0,b).rotation.x=Math.PI/2;const ba=mesh(new T.TorusGeometry(.15,.004,6,24,Math.PI),R.IRON,0,.28,0,b);ba.rotation.y=Math.PI/2;ba.rotation.x=-.5;
+    if(water){mesh(new T.CircleGeometry(.14,28),WATER,0,.23,0,b,false).rotation.x=-Math.PI/2;}return b;};
+  /* felt boots (valenki), standing as they were stepped out of */
+  const valenki=(g,x,y,z,ry=0)=>{const v=R.G(g,x,y,z,ry);[-.07,.07].forEach((dx,i)=>{const b=R.G(v,dx,0,i*.03,i?.12:-.05);mesh(lathe([[0,0],[.05,0],[.055,.05],[.05,.3],[.056,.42],[0,.42]],20),FELT,0,0,-.04,b);
+      const f=mesh(new T.SphereGeometry(.5,18,12),FELT,0,.045,.04,b);f.scale.set(.1,.09,.24);mesh(rbox(.1,.015,.25,.006),RUB,0,.006,.03,b);});return v;};
+  /* the red propane bottle by the house wall, its valve and cap guard, the stencil */
+  const gasBottle=(g,x,y,z,ry=0)=>{const b=R.G(g,x,y,z,ry);const red=m('gasred',()=>std({map:tex(128,64,(c,w,h)=>{c.fillStyle='#a8221a';c.fillRect(0,0,w,h);c.fillStyle='#e8e0d0';c.font='bold 15px sans-serif';c.fillText('ПРОПАН',20,38);const q=rng(4);for(let i=0;i<60;i++){c.fillStyle=`rgba(90,50,30,${q()*.5})`;c.fillRect(q()*w,q()*h,3+q()*6,2);}}),roughness:.5,metalness:.2}));
+    mesh(new T.CylinderGeometry(.15,.15,.7,32),red,0,.43,0,b);mesh(new T.SphereGeometry(.15,32,12,0,Math.PI*2,0,Math.PI/2),red,0,.78,0,b);mesh(new T.CylinderGeometry(.14,.14,.08,32,1,true),red,0,.04,0,b);
+    mesh(new T.CylinderGeometry(.03,.035,.06,12),R.BR,0,.95,0,b);mesh(new T.TorusGeometry(.07,.01,8,24),red,0,1.0,0,b).rotation.x=Math.PI/2;[0,2.1,4.2].forEach(a=>mesh(new T.CylinderGeometry(.008,.008,.1,6),red,Math.cos(a)*.07,.95,Math.sin(a)*.07,b));return b;};
+  /* a washing line between two T-posts, the washing pegged on it moving a little */
+  const laundry=(g,A,B,seed)=>{const q=rng(seed),post=(p)=>{mesh(new T.CylinderGeometry(.04,.05,2.2,12),R.W3,p.x,p.y+.85,p.z,g);mesh(rbox(.5,.05,.05,.01),R.W3,p.x,p.y+1.92,p.z,g);};post(A);post(B);
+    const a=V3(A.x,A.y+1.9,A.z),b=V3(B.x,B.y+1.9,B.z),L=a.distanceTo(b);const ln=[];for(let i=0;i<=16;i++){const t=i/16;ln.push(a.clone().lerp(b,t).add(V3(0,-.25*4*t*(1-t),0)));}
+    mesh(new T.TubeGeometry(new T.CatmullRomCurve3(ln),32,.003,4),R.IRON,0,0,0,g);
+    const cols=[0xe8e4d8,0x7a8aa8,0xa84a3a,0xd8d0b0,0x5a7a5a,0xe0d8e8];const dir=V3().subVectors(b,a).normalize(),ry=Math.atan2(dir.x,dir.z)+Math.PI/2;
+    for(let t=.12;t<.9;t+=.12+q()*.08){const p=a.clone().lerp(b,t).add(V3(0,-.25*4*t*(1-t),0)),w=.3+q()*.4,hh=.35+q()*.4;const cg=new T.PlaneGeometry(w,hh,4,4);const P=cg.attributes.position;for(let i=0;i<P.count;i++)P.setZ(i,Math.sin(P.getX(i)*9+t*20)*.015+(P.getY(i)<0?(-P.getY(i))*.08:0));cg.computeVertexNormals();
+      const cm=m('cloth'+(cols.length*t|0)%cols.length,()=>std({map:TX.cloth,color:C(cols[(cols.length*t|0)%cols.length]),roughness:1,side:T.DoubleSide}));const cl=mesh(cg,cm,p.x,p.y-hh/2,p.z,g);cl.rotation.y=ry;
+      [-1,1].forEach(k=>{const pg=mesh(rbox(.012,.06,.012,.003),R.W2,p.x+Math.cos(ry)*k*w*.42,p.y-.01,p.z-Math.sin(ry)*k*w*.42,g);});}};
+  /* the chopping block with the axe left in it, chips round it */
+  const chopBlock=(g,x,y,z,ry=0)=>{const b=R.G(g,x,y,z,ry);mesh(new T.CylinderGeometry(.24,.27,.5,28),m('stump',()=>std({map:TX.bark,color:C(0x7a6650),roughness:1})),0,.25,0,b);mesh(new T.CircleGeometry(.235,28),m('endg',()=>std({color:C(0xb89a72),roughness:1})),0,.502,0,b).rotation.x=-Math.PI/2;
+    const ax=R.G(b,.04,.5,0,.4);ax.rotation.z=.75;mesh(new T.CylinderGeometry(.016,.02,.62,10),R.W2,0,.31,0,ax);const head=mesh(rbox(.03,.09,.17,.006),R.IRON,0,.02,.05,ax);head.rotation.x=.1;
+    for(let i=0;i<14;i++){const c=mesh(rbox(.05+Math.random()*.06,.012,.02+Math.random()*.03,.003),m('chip',()=>std({color:C(0xc8aa80),roughness:1})),(Math.random()-.5)*1.2,.006,(Math.random()-.5)*1.2,b);c.rotation.y=Math.random()*3;}return b;};
+  /* a galvanised watering can and a milk churn */
+  const wateringCan=(g,x,y,z,ry=0)=>{const w=R.G(g,x,y,z,ry);mesh(new T.CylinderGeometry(.11,.12,.26,24),ZN,0,.13,0,w);const sp=new T.TubeGeometry(new T.CatmullRomCurve3([V3(.1,.05,0),V3(.22,.16,0),V3(.32,.27,0)]),12,.014,8);mesh(sp,ZN,0,0,0,w);
+    mesh(new T.CylinderGeometry(.035,.02,.04,14),ZN,.33,.28,0,w).rotation.z=-.9;const hd=new T.TubeGeometry(new T.CatmullRomCurve3([V3(-.09,.24,0),V3(-.02,.34,0),V3(.06,.25,0)]),12,.008,6);mesh(hd,ZN,0,0,0,w);return w;};
+  const milkCan=(g,x,y,z)=>{const c=R.G(g,x,y,z,0);mesh(lathe([[0,0],[.15,0],[.16,.02],[.16,.42],[.1,.5],[.08,.56],[.085,.6],[0,.6]],32),ZN,0,0,0,c);[-1,1].forEach(k=>mesh(new T.TorusGeometry(.03,.006,6,14,Math.PI),ZN,k*.16,.46,0,c).rotation.y=Math.PI/2);return c;};
+  /* the dog's kennel: boards, a pitched roof, the round door, chain and bowl (the dog has gone) */
+  const kennel=(g,x,y,z,ry=0,hy)=>{const k=R.G(g,x,y,z,ry);const bw=m('kennel',()=>std({map:M.boards.map,color:C(0x8a7458),roughness:1}));
+    const sh=new T.Shape();sh.moveTo(-.4,0);sh.lineTo(.4,0);sh.lineTo(.4,.55);sh.lineTo(0,.8);sh.lineTo(-.4,.55);sh.closePath();const hole=new T.Path();hole.absarc(0,.25,.17,0,Math.PI,false);hole.lineTo(-.17,.05);hole.lineTo(.17,.05);sh.holes.push(hole);
+    const fr=new T.ExtrudeGeometry(sh,{depth:.03,bevelEnabled:false});worldUV(fr,2);mesh(fr,bw,0,0,.45,k);const bk=new T.Shape();bk.moveTo(-.4,0);bk.lineTo(.4,0);bk.lineTo(.4,.55);bk.lineTo(0,.8);bk.lineTo(-.4,.55);bk.closePath();const bg=new T.ExtrudeGeometry(bk,{depth:.03,bevelEnabled:false});worldUV(bg,2);mesh(bg,bw,0,0,-.48,k);
+    [-1,1].forEach(s=>{mesh(rbox(.03,.55,.95,.005),bw,s*.385,.275,0,k);const r=mesh(rbox(.5,.025,1.05,.005),m('kroof',()=>std({map:TX.slate||M.slate.map,color:C(0x8a8a84),roughness:.9})),s*.21,.68,0,k);r.rotation.z=-s*Math.atan2(.25,.4);});
+    mesh(rbox(.8,.03,.95,.005),bw,0,.015,0,k);const ch=[];for(let i=0;i<14;i++){const t=i/13;ch.push(V3(lerp(.3,1.4,t),.06+.25*Math.sin(t*Math.PI)*.2,lerp(.42,.8,t)));}mesh(new T.TubeGeometry(new T.CatmullRomCurve3(ch),40,.006,4),R.IRON,0,0,0,k);
+    mesh(lathe([[0,0],[.08,0],[.1,.04],[.09,.05],[0,.02]],20),ZN,1.0,0,1.0,k);return k;};
+  /* a "Ural" roadster bicycle leaning on a fence: frame tubes, mudguards, the wheels spoked, saddle, bars */
+  const bicycle=(g,x,y,z,ry=0)=>{const b=R.G(g,x,y,z,ry);b.rotation.z=.14;const fr=m('bike',()=>std({color:C(0x1a2a3a),roughness:.35,metalness:.4,envMapIntensity:.8}));
+    const tube=(a,c,r=.014)=>mesh(new T.TubeGeometry(new T.LineCurve3(a,c),2,r,10),fr,0,0,0,b);const W1=V3(-.55,.33,0),W2=V3(.55,.33,0),BB=V3(-.02,.3,0),ST=V3(-.12,.82,0),HD=V3(.42,.86,0);
+    tube(BB,ST);tube(ST,HD);tube(BB,HD.clone().add(V3(-.02,-.06,0)));tube(BB,W1);tube(ST,W1);tube(HD,W2,.016);
+    [W1,W2].forEach(c=>{mesh(new T.TorusGeometry(.33,.016,10,48),RUB,c.x,c.y,c.z,b);mesh(new T.TorusGeometry(.31,.006,6,48),CHR,c.x,c.y,c.z,b);const sp=[];for(let i=0;i<18;i++){const a=i/18*Math.PI*2;sp.push(V3(c.x,c.y,c.z),V3(c.x+Math.cos(a)*.31,c.y+Math.sin(a)*.31,c.z+(i%2?.02:-.02)));}
+      const sg=new T.BufferGeometry().setFromPoints(sp);const ls=new T.LineSegments(sg,new T.LineBasicMaterial({color:0x9a9a9a}));b.add(ls);mesh(new T.CylinderGeometry(.03,.03,.07,14),CHR,c.x,c.y,c.z,b).rotation.x=Math.PI/2;
+      mesh(new T.TorusGeometry(.36,.012,6,32,Math.PI*.7),fr,c.x,c.y,c.z,b).rotation.z=Math.PI*.15;});
+    mesh(rbox(.2,.04,.1,.02),m('saddle',()=>std({color:C(0x2a1a12),roughness:.6})),-.14,.86,0,b);tube(V3(.42,.86,0),V3(.4,.98,0));tube(V3(.34,1.0,-.24),V3(.34,1.0,.24),.012);
+    mesh(new T.CylinderGeometry(.08,.08,.02,24),CHR,-.02,.3,.03,b).rotation.x=Math.PI/2;return b;};
+  return{teacup,teapot,loaf,pickles,samovar,bucket,valenki,gasBottle,laundry,chopBlock,wateringCan,milkCan,kennel,bicycle,ENAM,ZN};})();

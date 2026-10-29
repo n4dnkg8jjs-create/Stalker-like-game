@@ -18,7 +18,7 @@ const VILL={sz:-363.5,x0:0,x1:160,
     garden:[-7,4.4,-21,-7.5],out:[['cellar',7.0,-4.6,0],['saray',-6.2,-3.4,Math.PI/2],['wood',-6.2,1.1,Math.PI/2],['wc',4,-22.5,Math.PI]]},
    {id:'n2',x:86,z:-387,yaw:0,W:9.6,D:7.2,clad:1,hip:1,roof:'tin',col:0x4f7899,rc:0x46684a,enter:1,ver:2,fence:'board',
     garden:[-8,9,-24,-7.5],out:[['banya',-8.4,-4,Math.PI/2],['cellar',7.6,-3.2,-Math.PI/2],['green',6,-19,0],['saray',-8.6,2.8,Math.PI/2],['wc',-6,-25.5,Math.PI/2]]},
-   {id:'n3',x:113,z:-377.5,yaw:0,W:6.2,D:5.4,clad:0,roof:'slate',col:0x8a5a3a,boarded:1,fence:'rail',
+   {id:'n3',x:113,z:-377.5,yaw:0,W:6.2,D:5.4,clad:0,roof:'slate',col:0x8a5a3a,boarded:1,ruin:'collapse',fence:'rail',
     garden:[-5,6,-15,-5],out:[['saray',5.6,-2.6,-Math.PI/2],['wood',-5.6,-1.2,Math.PI/2]]},
    {id:'n4',x:140,z:-381,yaw:0,W:7.6,D:6.4,clad:0,roof:'slate',col:0x6c6f72,enter:1,dvor:1,fence:'picket',
     garden:[-9,8,-28,-14],out:[['cellar',-6.6,-5,Math.PI/2],['banya',11.5,-14.5,-Math.PI/2],['wood',6.4,-1.2,-Math.PI/2]]},
@@ -43,7 +43,7 @@ const VILL={sz:-363.5,x0:0,x1:160,
     garden:[-6,6,-12,-5],out:[['wood',-6,-1.5,Math.PI/2],['cellar',6.2,-2.8,-Math.PI/2]]},
    {id:'b4',x:147,z:-265.5,yaw:Math.PI,W:7,D:6,clad:1,roof:'tin',col:0x9a8a5a,rc:0x4a5a6a,enter:1,fence:'board',
     garden:[-6,6,-17,-6],out:[['cellar',-6,-3.5,Math.PI/2],['saray',6,-2,-Math.PI/2],['green',-2,-21,0]]},
-   {id:'b5',x:168,z:-288.3,yaw:0,W:6.4,D:5.8,clad:0,roof:'slate',col:0x6a6a5a,boarded:1,fence:'rail',
+   {id:'b5',x:168,z:-288.3,yaw:0,W:6.4,D:5.8,clad:0,roof:'slate',col:0x6a6a5a,boarded:1,ruin:'strike',breach:['west',-1.3,.5],hole:[1,4,5],fence:'rail',
     garden:[-5,5,-14,-5],out:[['saray',5.9,-2.4,-Math.PI/2]]},
    /* Lesnaya street, leaving the main street's east end north-east toward the forest: c1 on its east side, c2 on its west */
    {id:'c1',x:181.8,z:-384,yaw:-Math.PI/2,W:7.2,D:6,clad:0,roof:'tin',col:0x4a6a8a,rc:0x6a3a2c,enter:1,ver:1,fence:'picket',
@@ -237,6 +237,9 @@ let CRATERS=null;CRATERS=(()=>{const L=[],R=rng(731);const take=(rd,s0,s1,n,dmin
      drive, and all over the fields along the kolkhoz road */
   {const t=ROADS.tr.P;const sA=t.find(p=>p.z<-500).s,sB=t.find(p=>p.z<-556).s;take(ROADS.tr,sA,sB,5,7.5,20,true);}
   take(ROADS.dr,60,ROADS.dr.L-30,11,8.5,26);take(ROADS.dr,40,ROADS.dr.L-30,9,26,52);
+  /* the village has been shelled too: the hit that brought n3 down (its crater in the front yard), one in the burnt
+     house's garden, two on the street, one on the lane's verge, one in the meadow behind the north gardens */
+  [[110.5,-370.4,2.2],[61.5,-343.4,2.1],[88,-362.6,1.7],[139,-361.8,1.9],[84,-322,1.8],[93,-430,2.6],[40,-418,2.2]].forEach(([x,z,r])=>L.push({x,z,r,dep:r*.32,rim:r*.09,ph:x%6.28,ph2:z%6.28}));
   const B=24,G=new Map();L.forEach(c=>{const e=c.r*2;for(let i=Math.floor((c.x-e)/B);i<=Math.floor((c.x+e)/B);i++)for(let j=Math.floor((c.z-e)/B);j<=Math.floor((c.z+e)/B);j++){const k=i+','+j;if(!G.has(k))G.set(k,[]);G.get(k).push(c);}});
   return{L,G,B};})();
 function _crList(x,z){if(!CRATERS)return null;return CRATERS.G.get(Math.floor(x/CRATERS.B)+','+Math.floor(z/CRATERS.B));}

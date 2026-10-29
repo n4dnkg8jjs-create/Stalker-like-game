@@ -43,7 +43,16 @@ function addHole(h,hitObj,p){if(!h.holes)return;const bone=h.P.bones[hitObj.user
 FX.blood=new PSys(260,PTEX.soft,false,{order:3});FX.bloodMist=new PSys(90,PTEX.smoke,false,{order:3});
 const DROPS=[],STAINS=[],FLOORS=[];
 /* floors above the ground: the firing platform in the shack */
-function floorAt(x,z){let y=H(x,z);for(const f of FLOORS)if(x>f.x0&&x<f.x1&&z>f.z0&&z<f.z1)y=Math.max(y,f.y);return y;}
+/* the ground as it is drawn: the terrain is a mesh of 3.8 m triangles, so between its vertices the surface you see is the
+   flat triangle, not the smooth height function - a body laid on the function floats over hollows and sinks into
+   rises. Here the triangle is interpolated exactly as the mesh splits its cells (corner heights cached); over a road or
+   anything else drawn above the mesh, the higher surface wins */
+const _TMH=new Map(),TSX=1285/338,TSZ=1040/272;
+function terrMeshY(x,z){const fx=(x+905)/TSX,fz=(z+720)/TSZ,ix=Math.floor(fx),iz=Math.floor(fz),u=fx-ix,v=fz-iz;
+  const c=(i,j)=>{const k=i*4096+j;let h=_TMH.get(k);if(h===undefined){h=Hterr(-905+i*TSX,-720+j*TSZ);if(_TMH.size>200000)_TMH.clear();_TMH.set(k,h);}return h;};
+  const h00=c(ix,iz),h10=c(ix+1,iz),h01=c(ix,iz+1),h11=c(ix+1,iz+1);return u+v<=1?h00+u*(h10-h00)+v*(h01-h00):h11+(1-u)*(h01-h11)+(1-v)*(h10-h11);}
+function groundSeen(x,z){const h=H(x,z);if(x<-904||x>379||z<-719||z>319||inDET(x,z))return h;const ht=Hterr(x,z);return ht<h-.05?h:terrMeshY(x,z);}
+function floorAt(x,z){let y=groundSeen(x,z);if(inHouse(x,z))y=Math.max(y,FL+.03);else for(const p of PORCHES)if(x>p.x1&&x<p.x2&&z>p.z1&&z<p.z2){y=Math.max(y,p.y);break;}for(const f of FLOORS)if(x>f.x0&&x<f.x1&&z>f.z0&&z<f.z1)y=Math.max(y,f.y);return y;}
 let _bseed=0;
 function bloodSpurt(p,dir,k=1){const d=dir.clone().normalize();
   /* the puff of mist where the round goes in and out - big enough to read at fighting distance - then the spray of
@@ -104,7 +113,7 @@ class Ragdoll{constructor(h,hitP,dir,o={}){this.h=h;h.root.traverse(q=>{if(q.isS
     if(pl<1e-5)perp=V3(A.y,A.z,A.x).cross(A).normalize();else perp.multiplyScalar(1/pl);const nd=A.clone().multiplyScalar(Math.cos(mx)).addScaledVector(perp,Math.sin(mx));
     const tgt=J.clone().addScaledVector(nd,L);P[k].lerp(tgt,.7);}
   step(dt){const P=this.p,Q=this.q,im=this.im,g=-9.8*dt*dt;let mv=0;
-    for(let i=0;i<P.length;i++){const p=P[i],q=Q[i];const vx=(p.x-q.x)*.985,vy=(p.y-q.y)*.99,vz=(p.z-q.z)*.985;q.copy(p);p.x+=vx;p.y+=vy+g;p.z+=vz;}
+    const dmp=this.t<2?.985:this.t<5?.96:.92;for(let i=0;i<P.length;i++){const p=P[i],q=Q[i];const vx=(p.x-q.x)*dmp,vy=(p.y-q.y)*(dmp+.005),vz=(p.z-q.z)*dmp;q.copy(p);p.x+=vx;p.y+=vy+g;p.z+=vz;}
     /* (held: one point of him goes where the hand that holds him goes) */const pin=this.pin;
     for(let it=0;it<12;it++){if(pin){P[pin.i].lerp(pin.p,.6);}for(const [i,j,mn,mx] of this.c){const a=P[i],b=P[j];const dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z;const d=Math.sqrt(dx*dx+dy*dy+dz*dz)||1e-6;
         const t=d<mn?mn:d>mx?mx:d;if(t===d)continue;const wa=im[i],wb=im[j],k=(d-t)/d/(wa+wb);a.x+=dx*k*wa;a.y+=dy*k*wa;a.z+=dz*k*wa;b.x-=dx*k*wb;b.y-=dy*k*wb;b.z-=dz*k*wb;}
@@ -123,9 +132,13 @@ class Ragdoll{constructor(h,hitP,dir,o={}){this.h=h;h.root.traverse(q=>{if(q.isS
             p.x=c.x+nx*c.c+nz*c.s;p.z=c.z-nx*c.s+nz*c.c;}}}}
     if(pin){P[pin.i].copy(pin.p);Q[pin.i].lerp(pin.p,.5);}
     for(let i=0;i<P.length;i++)mv=Math.max(mv,P[i].distanceToSquared(Q[i]));return mv;}
-  update(dt){if(this.done)return;this.acc+=Math.min(dt,.1);while(this.acc>=1/60){this.acc-=1/60;this.t+=1/60;const mv=this.step(1/60);this.still=mv<2.2e-6?this.still+1:0;}
-    this.pose();if(!this.pin&&((this.t>1.2&&this.still>40)||this.t>7)){this.done=true;if(this.onRest)this.onRest(this);}}
-  pose(){const P=this.p,h=this.h;const root=h.root;h.P.bones.hips.position.copy(root.worldToLocal(P[0].clone().add(this.hipOff)));h.P.bones.hips.updateMatrixWorld(true);
+  update(dt){if(this.done)return;this.acc+=Math.min(dt,.1);if(!this.pp)this.pp=this.p.map(v=>v.clone());while(this.acc>=1/60){this.acc-=1/60;this.t+=1/60;for(let i=0;i<this.p.length;i++)this.pp[i].copy(this.p[i]);const mv=this.step(1/60);this.still=mv<2.2e-6?this.still+1:0;}
+    /* drawn between the last two physics steps, so the fall is smooth at any frame rate */
+    {const a=this.acc*60;if(!this.pi)this.pi=this.p.map(v=>v.clone());for(let i=0;i<this.p.length;i++)this.pi[i].copy(this.pp[i]).lerp(this.p[i],a);}
+    /* he only comes to rest lying on something: every point near the floor or held up by the others, never hanging */
+    this.pose(this.pi);if(!this.pin&&this.t>1.2&&(this.still>40||this.t>12)){const P=this.p;let air=false;for(const i of [0,1,2,3,13,17]){if(P[i].y-floorAt(P[i].x,P[i].z)-RRAD[i]>.12){air=true;break;}}
+      if(!air||this.t>20){this.done=true;if(this.onRest)this.onRest(this);}}}
+  pose(Pv){const P=Pv||this.p,h=this.h;const root=h.root;h.P.bones.hips.position.copy(root.worldToLocal(P[0].clone().add(this.hipOff)));h.P.bones.hips.updateMatrixWorld(true);
     const q=new T.Quaternion(),dq=new T.Quaternion();
     for(const a of this.ax){const A=V3().subVectors(P[a.a1],P[a.a0]);if(A.lengthSq()<1e-8)continue;A.normalize();
       if(a.full){const Bv=V3().subVectors(P[a.b1],P[a.b0]).normalize();if(Math.abs(A.dot(Bv))>.98)continue;basisQ(a.A0,a.B0,A,Bv,q).multiply(a.Q0);a.Q.copy(q);}

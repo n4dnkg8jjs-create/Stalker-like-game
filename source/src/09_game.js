@@ -738,9 +738,15 @@ function audioTick(dt){if(!AC)return;const c=camera,L=AC.listener;
    else{L.setPosition(c.position.x,c.position.y,c.position.z);L.setOrientation(f.x,f.y,f.z,u.x,u.y,u.z);}}
   const ind=inHouse(c.position.x,c.position.z);AUD.ind=ind;AUD.rvOg.gain.value=damp(AUD.rvOg.gain.value,ind?.08:.55,3,dt);AUD.rvIg.gain.value=damp(AUD.rvIg.gain.value,ind?.7:0,3,dt);
   /* wind with gusts; the leaves answer the gusts */
-  const rain=(typeof WEATHER!=='undefined'&&WEATHER.rain)||0;AUD.gust=damp(AUD.gust,clamp(fbm(S.t*.07,3.1,2)*1.6-.3,0,1),.8,dt);
-  if(sfx.windG){sfx.windG.gain.value=(.04+AUD.gust*.05+Math.hypot(player.vel.x,player.vel.z)*.006+(S.where==='sector'?.02:0))*(ind?.35:1);sfx.windF.frequency.value=320+AUD.gust*380;}
-  if(sfx.leafG)sfx.leafG.gain.value=ind?0:(.006+AUD.gust*.022)*(1+rain*.5);
+  /* the wind is not a constant hiss: the air is mostly still, and now and then a breeze comes through - it rises over a
+     second or three, holds, and dies away, each one different in strength and colour; in rain or fog they come oftener */
+  const rain=(typeof WEATHER!=='undefined'&&WEATHER.rain)||0;{const G=AUD.gw||(AUD.gw={t:3+Math.random()*8,ph:0,e:0,pk:0,r:2,h:1,f:4,c:0,tt:0});
+    if(G.ph===0){G.t-=dt;G.e=damp(G.e,0,1.2,dt);if(G.t<=0){G.ph=1;G.tt=0;G.pk=.25+Math.pow(Math.random(),.7)*.75;G.r=1+Math.random()*2.4;G.h=.4+Math.random()*3.2;G.f=2.2+Math.random()*4.5;G.c=Math.random();}}
+    else{G.tt+=dt;const tt=G.tt;let w;if(tt<G.r)w=sstep(0,1,tt/G.r);else if(tt<G.r+G.h)w=1-.15*(.5+.5*Math.sin((tt-G.r)*2.3+G.c*6));else if(tt<G.r+G.h+G.f)w=1-sstep(0,1,(tt-G.r-G.h)/G.f);else{w=0;G.ph=0;G.t=(5+Math.random()*28)*(rain>.3||(typeof WEATHER!=='undefined'&&(WEATHER.fogX||1)>1.2)?.55:1);}
+      G.e=w*G.pk;}
+    AUD.gust=G.e;AUD.gustC=G.c;}
+  if(sfx.windG){sfx.windG.gain.value=(.003+AUD.gust*.075+Math.hypot(player.vel.x,player.vel.z)*.0025)*(ind?.3:1);sfx.windF.frequency.value=220+AUD.gust*(380+(AUD.gustC||0)*420);}
+  if(sfx.leafG)sfx.leafG.gain.value=ind?0:AUD.gust*AUD.gust*.03*(1+rain*.5);
   /* breathing hard after a sprint */
   if(sfx.breathG){const want=clamp((55-S.stam)/55,0,1)*(S.state==='play'?1:0);AUD.breath=damp(AUD.breath,want,1.5,dt);AUD.brT+=dt*lerp(.25,.55,AUD.breath);const ph=AUD.brT%1;
     const env=ph<.42?Math.sin(ph/.42*Math.PI)*.7:ph<.5?0:Math.sin((ph-.5)/.5*Math.PI);sfx.breathG.gain.value=AUD.breath*env*.03;sfx.breathF.frequency.value=ph<.45?1500:900;}
@@ -748,7 +754,7 @@ function audioTick(dt){if(!AC)return;const c=camera,L=AC.listener;
   if(AUD.bed){const calm=clamp((S.t-AUD.lastGun-20)/40,0,1),px=player.pos.x,live=S.state==='play'||S.state==='view'||S.state==='ride';
     const B=AUD.bed('birds');if(B)B.g.gain.value=damp(B.g.gain.value,live&&!ind?.22*calm*(1-rain)*(1-clamp(((WEATHER.fogX||1)-1)/.6,0,.7)):0,1,dt);
     const F=AUD.bed('frogs');if(F)F.g.gain.value=damp(F.g.gain.value,live&&px<-660?.3*clamp((S.t-AUD.lastGun-10)/25,0,1)*clamp((-660-px)/60,0,1):0,.7,dt);
-    const Wd=AUD.bed('wind');if(Wd)Wd.g.gain.value=damp(Wd.g.gain.value,live?(.18+AUD.gust*.35)*(ind?.25:1):0,2,dt);
+    const Wd=AUD.bed('wind');if(Wd)Wd.g.gain.value=damp(Wd.g.gain.value,live?AUD.gust*.45*(ind?.25:1):0,3,dt);
     if(AUD.rainRec)AUD.rainRec();
     const Wa=AUD.bed('wade');if(Wa){const v=Math.hypot(player.vel.x,player.vel.z);Wa.g.gain.value=damp(Wa.g.gain.value,S.state==='play'&&S.wade>.05?clamp(v/2,0,1)*clamp(S.wade*1.6,0,1)*.5:0,6,dt);}
     if(B&&sfx.windG)sfx.windG.gain.value*=.45;}
@@ -1106,7 +1112,7 @@ function frame(now){requestAnimationFrame(frame);
   if(sayT>0){sayT-=dt;if(sayT<=0&&S.state!=='ride')$('bars').style.opacity=0;}
   if(toastT>0){toastT-=dt;if(toastT<=0)$('toast').classList.remove('on');}
   if(S.state==='play'&&document.pointerLockElement!==canvas&&!curInt&&!DBG){$('prompt').textContent='Click to take control';$('prompt').classList.add('on');}
-  audioTick(dt);aud2Tick(dt);
+  audioTick(dt);aud2Tick(dt);warTick(dt);villTick(dt);warFxTick(dt);
   const P=postMat.uniforms;P.uT.value=S.t;P.uSan.value=clamp((45-S.sanity)/45,0,1);P.uDmg.value=S.sinceDmg<.6?1-S.sinceDmg/.6:clamp((25-S.hp)/25,0,.7);P.uRad.value=clamp((S.rate-3)/40,0,1)*(S.state==='play'?1:0);P.uHP.value=S.hp/100;P.uDrunk.value=S.drunk>0?.6:0;
   if(S.state==='play'||S.state==='view')updateHUD();objMarker(dt);
   if(window.__camOv){const c=window.__camOv(),q=camera;q.position.copy(c[0]);q.up.set(0,1,0);q.lookAt(c[1]);vmRoot.visible=false;}
